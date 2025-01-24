@@ -1,6 +1,11 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
 
+export enum HomeImagesStates {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+}
+
 export enum HomeImagesValidTypes {
     SELECCION = 'SELECCION',
     DIMAYOR = 'DIMAYOR',
@@ -18,23 +23,17 @@ export class HomeImages extends Document {
     @Prop({ required: true, type: String })
     link!: string;
 
-    @Prop({ required: false, type: String })
-    titleImg!: string;
-
-    @Prop({ required: false, type: String })
-    altImg!: string;
-
     @Prop({ required: false, type: Date })
     date!: Date;
 
     @Prop({ required: false, type: Number, default: 0 })
     sort!: number;
 
-    @Prop({ required: false, type: String, default: 'inactive' })
+    @Prop({ required: false, enum: HomeImagesStates, default: HomeImagesStates.INACTIVE })
     state!: string;
 
     @Prop({ required: false, type: String })
-    title!: string;
+    titulo!: string;
 
     @Prop({ required: false, type: String })
     alt!: string;

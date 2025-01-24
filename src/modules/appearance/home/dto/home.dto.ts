@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsNumber, IsDate } from 'class-validator';
-import { HomeImagesValidTypes } from '../home.schema';
+import { HomeImagesStates, HomeImagesValidTypes } from '../home.schema';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateHomeImageDto {
@@ -8,48 +8,62 @@ export class CreateHomeImageDto {
     @IsNotEmpty()
     type!: HomeImagesValidTypes;
 
-    @ApiProperty()
+    @ApiProperty({ required: true, type: String, example: 'https://betplay.com.co' })
     @IsString()
     @IsNotEmpty()
     link!: string;
 
-    @ApiProperty({ required: false })
-    @IsString()
-    @IsOptional()
-    titleImg?: string;
-
-    @ApiProperty({ required: false })
-    @IsString()
-    @IsOptional()
-    altImg?: string;
-
-    @ApiProperty({ required: false })
-    @IsString()
-    @IsOptional()
-    path?: string;
-
-    @ApiProperty({ required: false })
-    @IsDate()
-    @IsOptional()
-    date?: Date;
-
-    @ApiProperty({ required: false })
+    @ApiProperty({ required: false, type: Number, example: 0 })
     @IsNumber()
     @IsOptional()
-    sort?: number;
+    sort!: number;
 
-    @ApiProperty({ required: false })
+    @ApiProperty({ required: false, type: String, example: 'Titulo de la imagen' })
     @IsString()
     @IsOptional()
-    state?: string;
+    titulo?: string;
 
-    @ApiProperty({ required: false })
+    @ApiProperty({ required: false, type: String, example: 'Texto alternativo' })
+    @IsString()
+    @IsOptional()
+    alt?: string;
+
+    @ApiProperty({ type: 'string', format: 'binary', required: true })
+    file: any;
+
+    path?: string;
+
+    date?: Date;
+}
+
+export class UpdateHomeImageDto {
+    @ApiProperty({ required: false, enum: HomeImagesValidTypes })
+    @IsEnum(HomeImagesValidTypes)
+    @IsOptional()
+    type!: HomeImagesValidTypes;
+
+    @ApiProperty({ required: true, type: String, example: 'https://betplay.com.co' })
+    @IsString()
+    @IsOptional()
+    link!: string;
+
+    @ApiProperty({ required: false, type: String, example: 'Titulo de la imagen' })
     @IsString()
     @IsOptional()
     title?: string;
 
-    @ApiProperty({ required: false })
+    @ApiProperty({ required: false, type: String, example: 'Texto alternativo' })
     @IsString()
     @IsOptional()
     alt?: string;
+
+    @ApiProperty({ required: false, type: String, example: 'Texto alternativo' })
+    @IsString()
+    @IsOptional()
+    state?: string;
+
+    @ApiProperty({ required: false, type: Number, example: 0 })
+    @IsNumber()
+    @IsOptional()
+    sort!: number;
 }

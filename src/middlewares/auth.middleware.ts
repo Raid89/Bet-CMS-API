@@ -1,16 +1,16 @@
-import { Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
+import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { NextLoggerService } from "../modules/logger/logger.service";
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { NextLoggerService } from '../modules/logger/logger.service';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-
     constructor(
         private readonly jwtService: JwtService,
+        private readonly configService: ConfigService,
         private readonly logger: NextLoggerService
     ) { }
-    
 
     use(req: Request, res: Response, next: NextFunction) {
         const authHeader = req.headers.authorization;
@@ -21,8 +21,10 @@ export class AuthMiddleware implements NestMiddleware {
 
         const token = authHeader.split(' ')[1];
         try {
-            const decoded = this.jwtService.verify(token);
-            if (decoded.role_name && decoded.role_name === 'Admin') {
+            const secret = this.configService.get<string>('JWT_SECRET');
+            console.log(secret)
+            const decoded = this.jwtService.verify(token, { secret });
+            if (decoded.role) {
                 next();
             } else {
                 throw new UnauthorizedException('No tienes permiso para acceder a este recurso.');
@@ -32,5 +34,4 @@ export class AuthMiddleware implements NestMiddleware {
             throw new UnauthorizedException('Token inválido.');
         }
     }
-
 }

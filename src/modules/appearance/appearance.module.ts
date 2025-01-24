@@ -12,20 +12,24 @@ import { LoggerModule } from '../logger/logger.module';
 import { AuthMiddleware } from '../../middlewares/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { FileStorageService } from '../../services/file-storage.service';
+import { PokerImages, PokerImagesSchema, PokerUrl, PokerUrlSchema } from './poker/poker.schema';
+import { Logos, LogosSchema, Slides, SlidesSchema } from './logos/logos.schema';
 
 @Module({
   imports: [
     ConfigModule,
     JwtModule,
-    MongooseModule.forFeature([{ name: HomeImages.name, schema: HomeImagesSchema }]),
+    MongooseModule.forFeature([
+      { name: HomeImages.name, schema: HomeImagesSchema },
+      { name: Logos.name, schema: LogosSchema },
+      { name: PokerUrl.name, schema: PokerUrlSchema },
+      { name: PokerImages.name, schema: PokerImagesSchema },
+      { name: Slides.name, schema: SlidesSchema }
+    ]),
     LoggerModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'defaultSecret',
-      signOptions: { expiresIn: '1h' },
-    }),
   ],
-  controllers: [HomeController],
-  providers: [HomeService, FileStorageService]
+  controllers: [HomeController, PokerController, LogosController],
+  providers: [HomeService, FileStorageService, PokerService, LogosService],
 })
 export class AppearanceModule {
   configure(consumer: MiddlewareConsumer): void {

@@ -25,4 +25,5 @@ export const envValidationSchema = Joi.object({
 
   //OTHERS
   ISMIGRATION: Joi.boolean().default(false), // ISMIGRATION is used to specify if the migration is enabled
+  IMAGE_HOST: Joi.string().required().error(new Error('IMAGEHOST is required and must be a STRING')), // IMAGEHOST is used to specify the host of the images
 });

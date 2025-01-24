@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as path from 'path';
 
 @Injectable()
 export class FileStorageService {
+
+    constructor(private configService: ConfigService) {}
+
     private readonly baseUploadPath = path.join(__dirname, '../../uploads');
 
     public async saveFile(fileName: string, folder: string, fileBuffer: Buffer): Promise<string> {
@@ -16,6 +20,8 @@ export class FileStorageService {
 
         fs.writeFileSync(fullPath, fileBuffer);
 
-        return fullPath;
+        const hostPath = `${this.configService.get('IMAGE_HOST')}/${folder}/${fileName}`;
+        console.log('hostPath', hostPath);
+        return hostPath;
     }
 }

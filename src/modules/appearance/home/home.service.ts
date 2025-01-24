@@ -3,10 +3,8 @@ import { HomeImages } from './home.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { NextLoggerService } from '../../../modules/logger/logger.service';
-import { CreateHomeImageDto } from './dto/home.dto';
+import { CreateHomeImageDto, UpdateHomeImageDto } from './dto/home.dto';
 import { FileStorageService } from '../../../services/file-storage.service';
-import path from 'path';
-import * as fs from 'fs';
 
 @Injectable()
 export class HomeService {
@@ -64,7 +62,7 @@ export class HomeService {
         }
     }
 
-    public async updateHomeImage(id: string, data: HomeImages) {
+    public async updateHomeImage(id: string, data: UpdateHomeImageDto) {
         try {
             return await this.homeImagesModel.findByIdAndUpdate(id, data, {new: true});
         } catch (error) {

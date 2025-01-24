@@ -10,12 +10,19 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AppearanceModule } from './modules/appearance/appearance.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ApplicationsModule } from './modules/applications/applications.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { RoleModule } from './modules/role/role.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       load : [ EnvConfiguration ],
       validationSchema: envValidationSchema,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../../uploads'), // Ruta a la carpeta uploads fuera del proyecto
+      serveRoot: '', // Ruta base para servir los archivos
     }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'defaultSecret',
@@ -28,11 +35,11 @@ import { JwtModule } from '@nestjs/jwt';
       }),
       inject: [ConfigService],
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public')
-    }),
     LoggerModule,
+    AuthModule,
+    RoleModule,
     AppearanceModule,
+    ApplicationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

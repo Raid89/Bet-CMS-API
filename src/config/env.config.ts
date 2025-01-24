@@ -23,4 +23,5 @@ export const EnvConfiguration = () => ({
 
     //OTHERS
     ISMIGRATION: process.env.ISMIGRATION || false,
+    IMAGE_HOST: process.env.IMAGESHOST,
 });
