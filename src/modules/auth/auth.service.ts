@@ -118,7 +118,39 @@ export class AuthService {
             this.logger.error('Error al actualizar usuario', 'updateUser', JSON.stringify(error));
             throw error;
         }
+    }
 
+    async deleteUser(id: string) {
+        try {
+            const user = await this.authModel.findByIdAndDelete(id);
+            if (!user) { throw new NotFoundException('User not found'); }
+            return user;
+        } catch (error) {
+            this.logger.error('Error al eliminar usuario', 'deleteUser', JSON.stringify(error));
+            throw error;
+        }
+    }
+
+    async getAllUsers(limit: number, skip: number) {
+        try {
+            const totalUsers = await this.authModel.countDocuments();
+            const users = await this.authModel.find().limit(limit).skip(skip);
+            return { count: totalUsers, data: users };
+        } catch(error) {
+            this.logger.error('Error al obtener los usuarios', 'getAllUsers', JSON.stringify(error));
+            throw error;
+        }
+    }
+
+    async getSingleUser(id: string) {
+        try {
+            const user = await this.authModel.findById(id);
+            if (!user) { throw new NotFoundException('User not found'); }
+            return user;
+        } catch (error) {
+            this.logger.error('Error al obtener usuario', 'getSingleUser', JSON.stringify(error));
+            throw error;
+        }
     }
 
     // UTILS FUNCTIONS
