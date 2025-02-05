@@ -15,8 +15,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
 import { BannerRegisterModule } from './modules/banner-register/banner-register.module';
 import { UsersModule } from './modules/users/users.module';
-import { SlotsModule } from './slots/slots.module';
-import { UsersModule } from './modules/users/users.module';
+import { SlotsModule } from './modules/slots/slots.module';
 
 @Module({
   imports: [

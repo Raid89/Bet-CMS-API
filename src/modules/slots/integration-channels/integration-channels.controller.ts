@@ -1,34 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { IntegrationChannelsService } from './integration-channels.service';
 import { CreateIntegrationChannelDto } from './dto/create-integration-channel.dto';
 import { UpdateIntegrationChannelDto } from './dto/update-integration-channel.dto';
+import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ResponseIntegrationalChannelDto } from './dto/response-integrational-channel.dto';
+import { IntegrationChannelsDocument } from './schemas/integration-channels.schema';
 
-@Controller('integration-channels')
+@ApiTags('Slots - Integration Channels')
+@Controller('slots')
 export class IntegrationChannelsController {
   constructor(private readonly integrationChannelsService: IntegrationChannelsService) {}
 
-  @Post()
-  create(@Body() createIntegrationChannelDto: CreateIntegrationChannelDto) {
-    return this.integrationChannelsService.create(createIntegrationChannelDto);
+  @Post('create-channel')
+  @ApiBody({ type: CreateIntegrationChannelDto })
+  @ApiResponse({ status: 200, type: ResponseIntegrationalChannelDto })
+  async create(@Body() createIntegrationChannelDto: CreateIntegrationChannelDto): Promise<ResponseIntegrationalChannelDto> {
+    return await this.integrationChannelsService.create(createIntegrationChannelDto);
   }
 
-  @Get()
-  findAll() {
+  @Get('get-channels')
+  @ApiResponse({ status: 200, type: [IntegrationChannelsDocument] })
+  findAll(): Promise<IntegrationChannelsDocument[]> {
     return this.integrationChannelsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.integrationChannelsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateIntegrationChannelDto: UpdateIntegrationChannelDto) {
-    return this.integrationChannelsService.update(+id, updateIntegrationChannelDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.integrationChannelsService.remove(+id);
+  @Post('/delete-channel/:id')
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, type: ResponseIntegrationalChannelDto })
+  async remove(@Param('id') id: string): Promise<ResponseIntegrationalChannelDto> {
+    return await this.integrationChannelsService.remove(id);
   }
 }

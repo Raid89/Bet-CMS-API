@@ -9,6 +9,7 @@ import { NextLoggerService } from '../logger/logger.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from '../logger/logger.module';
 import { AuthMiddleware } from '../../middlewares/auth.middleware';
+import { ValidatePasswordService } from 'src/common/validate-password.service';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -27,15 +28,16 @@ import { AuthMiddleware } from '../../middlewares/auth.middleware';
     LoggerModule
   ],
   controllers: [ AuthController ],
-  providers: [AuthService]
+  providers: [AuthService, ValidatePasswordService]
 })
 export class AuthModule { 
   configure(consumer: MiddlewareConsumer): void {
     consumer
       .apply(AuthMiddleware)
       .forRoutes(
-        { path: 'auth/register', method: RequestMethod.POST },
+        // { path: 'auth/register', method: RequestMethod.POST },
         { path: 'auth/me', method: RequestMethod.GET }
       )
   }
 }
+   

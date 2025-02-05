@@ -67,6 +67,10 @@ async function bootstrap() {
   SwaggerModule.setup(swaggerConfig.path, app, document, {
     swaggerOptions: {
       persistAuthorization: true,
+      filter: true,
+      operationsSorter: 'method',
+      displayRequestDuration: true,
+      layout: 'StandaloneLayout',
     },
   });
 
