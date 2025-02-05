@@ -1,4 +1,4 @@
-import { ApiProperty, PartialType } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 import { IsString } from "class-validator";
 
 export class UserRegisterDto {
@@ -36,5 +36,3 @@ export class UserRegisterDto {
 
     register_date!: Date;
 }
-
-export class UpdateUserDto extends PartialType(UserRegisterDto) {}

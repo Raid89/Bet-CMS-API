@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { NextLoggerService } from '../../../modules/logger/logger.service';
 import { CreateHomeImageDto, UpdateHomeImageDto } from './dto/home.dto';
-import { FileStorageService } from '../../../services/file-storage.service';
+import { FileStorageService } from '../../../common/file-storage.service';
 
 @Injectable()
 export class HomeService {

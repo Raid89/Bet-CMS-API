@@ -3,7 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, AuthSchema } from './auth.shema';
+import { User, AuthSchema} from '../users/schemas/auth.shema';
 import { Role, RoleSchema } from '../role/role.schema';
 import { NextLoggerService } from '../logger/logger.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';

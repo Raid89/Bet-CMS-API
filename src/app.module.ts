@@ -13,6 +13,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
+import { BannerRegisterModule } from './modules/banner-register/banner-register.module';
+import { UsersModule } from './modules/users/users.module';
+import { SlotsModule } from './slots/slots.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -40,6 +44,9 @@ import { RoleModule } from './modules/role/role.module';
     RoleModule,
     AppearanceModule,
     ApplicationsModule,
+    BannerRegisterModule,
+    UsersModule,
+    SlotsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
