@@ -1,34 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { GamesService } from './games.service';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { SlotsGamesService } from './games.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 
-@Controller('games')
-export class GamesController {
-  constructor(private readonly gamesService: GamesService) {}
+@ApiTags('Slots - Games')
+@Controller('slots')
+export class SlotsGamesController {
+  constructor(private readonly gamesService: SlotsGamesService) {}
 
-  @Post()
-  create(@Body() createGameDto: CreateGameDto) {
-    return this.gamesService.create(createGameDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.gamesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.gamesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
-    return this.gamesService.update(+id, updateGameDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.gamesService.remove(+id);
+  @Get('get-all-cms/:limit/:skip')
+  @ApiQuery({ name: 'criteria', required: false })
+  @ApiQuery({ name: 'integrationChannelCode', required: false })
+  @ApiQuery({ name: 'categoryId', required: false })
+  async SlotsGamesCmsFindAll(
+    @Param('limit') limit: number,
+    @Param('skip') skip: number,
+    @Query('criteria',) criteria?: string,
+    @Query('integrationChannelCode') integrationChannelCode?: string,
+    @Query('categoryId') categoryId?: string,
+  ) {
+    return await this.gamesService.SlotsGamesFindAllCms(
+      limit,
+      skip,
+      criteria,
+      integrationChannelCode,
+      categoryId,
+    );
   }
 }

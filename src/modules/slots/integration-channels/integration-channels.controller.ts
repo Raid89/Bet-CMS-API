@@ -15,19 +15,19 @@ export class IntegrationChannelsController {
   @ApiBody({ type: CreateIntegrationChannelDto })
   @ApiResponse({ status: 200, type: ResponseIntegrationalChannelDto })
   async create(@Body() createIntegrationChannelDto: CreateIntegrationChannelDto): Promise<ResponseIntegrationalChannelDto> {
-    return await this.integrationChannelsService.create(createIntegrationChannelDto);
+    return await this.integrationChannelsService.createIntegrationChannel(createIntegrationChannelDto);
   }
 
   @Get('get-channels')
   @ApiResponse({ status: 200, type: [IntegrationChannelsDocument] })
   findAll(): Promise<IntegrationChannelsDocument[]> {
-    return this.integrationChannelsService.findAll();
+    return this.integrationChannelsService.IntegrationChannelfindAll();
   }
 
   @Post('/delete-channel/:id')
   @ApiParam({ name: 'id', type: String })
   @ApiResponse({ status: 200, type: ResponseIntegrationalChannelDto })
   async remove(@Param('id') id: string): Promise<ResponseIntegrationalChannelDto> {
-    return await this.integrationChannelsService.remove(id);
+    return await this.integrationChannelsService.IntegrationChannelremove(id);
   }
 }

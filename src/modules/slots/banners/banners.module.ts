@@ -1,9 +1,17 @@
 import { Module } from '@nestjs/common';
-import { BannersService } from './banners.service';
+import { SlotsBannersService } from './banners.service';
 import { BannersController } from './banners.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { BannerSlotsDocument, BannerSlotsSchema } from './schemas/slots-banners.controller';
+import { LoggerModule } from 'src/modules/logger/logger.module';
 
 @Module({
+  imports: [
+    MongooseModule.forFeature([{ name: BannerSlotsDocument.name, schema: BannerSlotsSchema}]),
+    LoggerModule,
+  ],
   controllers: [BannersController],
-  providers: [BannersService],
+  providers: [SlotsBannersService],
+  exports: [SlotsBannersService],
 })
-export class BannersModule {}
+export class SlotsBannersModule {}

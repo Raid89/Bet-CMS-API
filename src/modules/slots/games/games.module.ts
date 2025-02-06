@@ -1,9 +1,18 @@
 import { Module } from '@nestjs/common';
-import { GamesService } from './games.service';
-import { GamesController } from './games.controller';
+import { SlotsGamesService } from './games.service';
+import { SlotsGamesController } from './games.controller';
+import { SlotSchema, SlotsDocument } from './schemas/games.schema';
+import { MongooseModule } from '@nestjs/mongoose';
+import { LoggerModule } from 'src/modules/logger/logger.module';
+import { SlotsCategoriesModule } from '../categories/categories.module';
 
 @Module({
-  controllers: [GamesController],
-  providers: [GamesService],
+  imports: [
+    MongooseModule.forFeature([{ name: SlotsDocument.name, schema: SlotSchema }]),
+    LoggerModule,
+  ],
+  controllers: [SlotsGamesController],
+  providers: [SlotsGamesService],
+  exports: [SlotsGamesService],
 })
-export class GamesModule {}
+export class SlotsGamesModule {}
