@@ -5,11 +5,13 @@ import { SlotSchema, SlotsDocument } from './schemas/games.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LoggerModule } from 'src/modules/logger/logger.module';
 import { SlotsCategoriesModule } from '../categories/categories.module';
+import { MicrositesModule } from '../microsites/microsites.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: SlotsDocument.name, schema: SlotSchema }]),
     LoggerModule,
+    MicrositesModule,
   ],
   controllers: [SlotsGamesController],
   providers: [SlotsGamesService],

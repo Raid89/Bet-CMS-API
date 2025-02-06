@@ -1,4 +1,5 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { MicrositesService } from './../microsites/microsites.service';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { NextLoggerService } from 'src/modules/logger/logger.service';
@@ -10,7 +11,27 @@ export class SlotsGamesService {
         @InjectModel(SlotsDocument.name)
         private readonly slotsModel: Model<SlotsDocument>,
         private readonly logger: NextLoggerService,
+        private readonly MicrositesService: MicrositesService,
     ) {}
+
+    // Definiciones de metodos de busqueda
+
+    async SlotsGamesFindOne(gameId: string): Promise<SlotsDocument> {
+        this.logger.log('Buscando un juego', 'SlotsGamesFindOne');
+        try {
+            const game = await this.slotsModel.findById(gameId);
+            if (!game) throw new NotFoundException('Juego no encontrado');
+            game.roules = process.env.IMAGESHOST + "/pdf/" + game.roules;
+            return game;
+        } catch(error) {
+            this.logger.error(
+                'Error buscando un juego',
+                'SlotsGamesFindOne',
+                JSON.stringify(error),
+            );
+            throw error;
+        }
+    }
 
     async SlotsGamesFindAll(isSisplay: boolean): Promise<SlotsDocument[]> {
         this.logger.log('Buscando todos los juegos', 'SlotsGamesFindAll');
@@ -103,7 +124,7 @@ export class SlotsGamesService {
                 },
             ]);
 
-            if (categoryId === '') {
+            if (categoryId === '' || categoryId === undefined) {
                 return { count: count, data: response };
             } else {
                 const response2 = await this.SlotsGamesFindAllArrayCms(
@@ -114,7 +135,7 @@ export class SlotsGamesService {
                     categoryId,
                 );
                 return {
-                    count: count + response2.count,
+                    count: count,
                     data: [...response, ...response2.data].sort((a, b) => {
                         if (a.sort !== b.sort) {
                             return a.sort - b.sort;
@@ -208,7 +229,7 @@ export class SlotsGamesService {
                 },
             ]);
 
-            return { count, data: response };
+            return { data: response };
         } catch (error) {
             // Lanza una excepción genérica de Nest con el error original
             throw new InternalServerErrorException(error);
@@ -261,6 +282,51 @@ export class SlotsGamesService {
             this.logger.error(
                 'Error buscando todos los juegos con filtro',
                 'TotalGamesFindWithFilter',
+                JSON.stringify(error),
+            );
+            throw error;
+        }
+    }
+
+    // Definicion de metodos de actualizacion y creacion
+
+    async SlotsGamesUpdate(gameId: string, gameData: any, gameFiles: any) {
+        this.logger.log('Actualizando un juego', 'SlotsGamesUpdate');
+        try {
+            if(gameData.microSite === 'true') {
+                const savedFiles = await this.MicrositesService.saveMicroSiteImage(gameFiles, gameId);
+                gameData = { ...gameData, ...savedFiles };
+            } else {
+                delete gameData.gDescTitle;
+                delete gameData.gDescSubtitle;
+                delete gameData.gDescText;
+                delete gameData.wGameTitle;
+                delete gameData.wGameDesc;
+            }
+
+            if (gameData.category) {
+                gameData.category = gameData.category.split(",");
+            }
+        
+            if(gameData.tags) {
+                gameData.tags = gameData.tags.split(',');
+            }
+        
+            if (gameData.feature && gameData.feature === "") {
+                delete gameData.feature;
+            }
+
+            const gameUpdated = await this.slotsModel.findByIdAndUpdate(gameId, gameData, { new: true });
+            
+            return {
+                code: "100",
+                message: "Slot actualizado con exito!",
+                data: gameUpdated,
+            }
+        } catch (error) {
+            this.logger.error(
+                'Error actualizando un juego',
+                'SlotsGamesUpdate',
                 JSON.stringify(error),
             );
             throw error;
