@@ -24,7 +24,7 @@ import { SlotsModule } from './modules/slots/slots.module';
       validationSchema: envValidationSchema,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../uploads'), // Ruta a la carpeta uploads fuera del proyecto
+      rootPath: join(__dirname, '../uploads'), // Ruta a la carpeta uploads fuera del proyecto
       serveRoot: '', // Ruta base para servir los archivos
     }),
     JwtModule.register({

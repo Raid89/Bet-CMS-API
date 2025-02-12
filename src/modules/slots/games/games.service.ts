@@ -291,11 +291,12 @@ export class SlotsGamesService {
     // Definicion de metodos de actualizacion y creacion
 
     async SlotsGamesUpdate(gameId: string, gameData: any, gameFiles: any) {
-        this.logger.log('Actualizando un juego', 'SlotsGamesUpdate');
+        this.logger.log('Actualizando un juego', 'SlotsGamesUpdate', JSON.stringify(gameData));
         try {
             if(gameData.microSite === 'true') {
                 const savedFiles = await this.MicrositesService.saveMicroSiteImage(gameFiles, gameId);
                 gameData = { ...gameData, ...savedFiles };
+                console.log(savedFiles)
             } else {
                 delete gameData.gDescTitle;
                 delete gameData.gDescSubtitle;

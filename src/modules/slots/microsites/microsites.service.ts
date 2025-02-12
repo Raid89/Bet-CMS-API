@@ -11,7 +11,8 @@ export class MicrositesService {
   ) {}
 
   async saveMicroSiteImage(files: any, gameId: string) {
-    const savedFiles: any = {};
+    const savedFiles: any = {}
+    let msIllustrativeCount = 0;
 
     // Función auxiliar para procesar un archivo individual
     const processSingleFile = async (
@@ -20,6 +21,10 @@ export class MicrositesService {
       folder: string
     ): Promise<string> => {
       const extension = file.mimetype.split('/')[1];
+      if(prefix === 'msIllustrative') {
+        prefix = `${prefix}_${msIllustrativeCount}`;
+        msIllustrativeCount++
+      }
       const fileName = `${prefix}_${gameId}.${extension}`;
       // Se asume que el archivo tiene la propiedad 'buffer'
       return this.fileStorageService.saveFile(fileName, folder, file.buffer);
@@ -27,43 +32,40 @@ export class MicrositesService {
 
     // Arreglo de promesas para ejecutar en paralelo (porque el tiempo es oro)
     const tasks: Promise<void>[] = [];
-
-    // Procesa msBanner
-    if (files?.msBanner) {
-      tasks.push(
-        processSingleFile(files.msBanner, 'msBanner', 'msBanner').then((path) => {
-          savedFiles.msBanner = path;
-        })
-      );
-    }
-
-    // Procesa msBannerMod
-    if (files?.msBannerMod) {
-      tasks.push(
-        processSingleFile(files.msBannerMod, 'msBannerMod', 'msBannerMod').then((path) => {
-          savedFiles.msBannerMod = path;
-        })
-      );
-    }
-
-    // Procesa msIllustrative (si es un array)
-    if (files?.['msIllustrative[]'] && Array.isArray(files['msIllustrative[]'])) {
-      tasks.push(
-        Promise.all(
-          files['msIllustrative[]'].map((file: any, index: number) => {
-            const extension = file.mimetype.split('/')[1];
-            const fileName = `msIllustrative_${index}_${gameId}.${extension}`;
-            return this.fileStorageService.saveFile(fileName, 'msIllustrative', file.buffer);
+    files.forEach((file: any) => {
+      if (file?.fieldname === 'msBanner') {
+        tasks.push(
+          processSingleFile(file, 'msBanner', 'slots').then((path) => {
+            savedFiles.msBanner = path;
           })
-        ).then((paths) => {
-          savedFiles.msIllustrative = paths;
-        })
-      );
-    }
+        );
+      }
+  
+      // Procesa msBannerMod
+      if (file?.fieldname === 'msBannerMod') {
+        tasks.push(
+          processSingleFile(file, 'msBannerMod', 'slots').then((path) => {
+            savedFiles.msBannerMod = path;
+          })
+        );
+      }
+  
+      // Procesa msIllustrative (si es un array)
+      if (file?.fieldname === 'msIllustrative[]') {
+        if (savedFiles.msIllustrative === undefined) savedFiles.msIllustrative = [];
+        tasks.push(
+          processSingleFile(file, `msIllustrative`, 'slots').then((path) => {
+            savedFiles.msIllustrative.push(path);
+          })
+        );
+      }
+    });
+    // Procesa msBanner
+
 
     // Espera a que todas las tareas finalicen
     await Promise.all(tasks);
-
+    console.log(savedFiles);
     return savedFiles;
   }
 }

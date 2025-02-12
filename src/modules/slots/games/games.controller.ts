@@ -40,7 +40,7 @@ export class SlotsGamesController {
   @UseInterceptors(AnyFilesInterceptor())
   async SlotsGamesUpdateOne(
     @Param('id') gameId: string,
-    @Body() updateGameDto: UpdateGameDto,
+    @Body() updateGameDto: any,
     @UploadedFiles() files: any,
   ) {
     return await this.gamesService.SlotsGamesUpdate(gameId, updateGameDto, files);
