@@ -16,6 +16,7 @@ import { RoleModule } from './modules/role/role.module';
 import { BannerRegisterModule } from './modules/banner-register/banner-register.module';
 import { UsersModule } from './modules/users/users.module';
 import { SlotsModule } from './modules/slots/slots.module';
+import { TagsModule } from './modules/tags/tags.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { SlotsModule } from './modules/slots/slots.module';
     BannerRegisterModule,
     UsersModule,
     SlotsModule,
+    TagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

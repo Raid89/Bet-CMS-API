@@ -82,7 +82,7 @@ export class SlotsDocument extends Document {
   @Prop({ type: String, required: false })
   gDescTitle!: string;
 
-  @Prop({ type: Boolean, required: true })
+  @Prop({ type: mongoose.Schema.Types.Mixed, required: false, default: false })
   microSite!: boolean;
 
   @Prop({ type: String, required: false })

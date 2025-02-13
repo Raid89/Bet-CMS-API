@@ -293,6 +293,7 @@ export class SlotsGamesService {
     async SlotsGamesUpdate(gameId: string, gameData: any, gameFiles: any) {
         this.logger.log('Actualizando un juego', 'SlotsGamesUpdate', JSON.stringify(gameData));
         try {
+            if(gameData.microSite === null) gameData.microSite = false;
             if(gameData.microSite === 'true') {
                 const savedFiles = await this.MicrositesService.saveMicroSiteImage(gameFiles, gameId);
                 gameData = { ...gameData, ...savedFiles };
@@ -316,6 +317,8 @@ export class SlotsGamesService {
             if (gameData.feature && gameData.feature === "") {
                 delete gameData.feature;
             }
+
+            gameData.microSite = gameData.microSite === 'true' ? true : false;
 
             const gameUpdated = await this.slotsModel.findByIdAndUpdate(gameId, gameData, { new: true });
             
