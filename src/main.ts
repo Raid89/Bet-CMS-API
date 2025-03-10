@@ -26,7 +26,7 @@ async function bootstrap() {
     }
   }
 
-  app.setGlobalPrefix("api/v2");
+  app.setGlobalPrefix("api/v1");
   console.log(`origin: ${allowed_origins[0] === '*' ? '*' : allowed_origins}`);
   console.log(`headers: ${allowed_headers === '*' ? '*' : allowed_headers}`);
 
