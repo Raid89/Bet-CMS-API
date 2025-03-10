@@ -13,6 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
+import { PromotionsModule } from "./modules/promotions/promotions.module";
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { RoleModule } from './modules/role/role.module';
     RoleModule,
     AppearanceModule,
     ApplicationsModule,
+    PromotionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
