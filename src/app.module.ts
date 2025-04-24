@@ -14,6 +14,7 @@ import { ApplicationsModule } from './modules/applications/applications.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
 import { PromotionsModule } from "./modules/promotions/promotions.module";
+import { ParameterizationModule } from "./modules/parameterization/parameterization.module";
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { PromotionsModule } from "./modules/promotions/promotions.module";
     AppearanceModule,
     ApplicationsModule,
     PromotionsModule,
+    ParameterizationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
