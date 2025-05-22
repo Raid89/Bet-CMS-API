@@ -67,11 +67,10 @@ async function bootstrap() {
   SwaggerModule.setup(swaggerConfig.path, app, document, {
     swaggerOptions: {
       persistAuthorization: true,
-      requestInterceptor: (req: Request) => {
-        const token = JSON.parse(localStorage.getItem('authorized') || '');
-        req.headers.Authorization = `Bearer ${token.bearer.value}`;
-        return req;
-      },
+      filter: true,
+      operationsSorter: 'method',
+      displayRequestDuration: true,
+      layout: 'StandaloneLayout',
     },
   });
 

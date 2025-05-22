@@ -3,7 +3,7 @@ import { PokerImages, PokerUrl } from './poker.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { NextLoggerService } from '../../../modules/logger/logger.service';
-import { FileStorageService } from '../../../services/file-storage.service';
+import { FileStorageService } from '../../../common/file-storage.service';
 import { CreatedPokerImageDto, UpdatePokerDtoUrl, UpdatePokerImageDto } from './dto/poker.dto';
 
 @Injectable()

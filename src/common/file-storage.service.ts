@@ -13,14 +13,19 @@ export class FileStorageService {
     public async saveFile(fileName: string, folder: string, fileBuffer: Buffer): Promise<string> {
         const dirPath = path.join(this.baseUploadPath, folder);
         const fullPath = path.join(dirPath, fileName);
-
-        if (!fs.existsSync(dirPath)) {
-            fs.mkdirSync(dirPath, { recursive: true });
+      
+        try {
+          await fs.promises.access(dirPath);
+        } catch (error) {
+          await fs.promises.mkdir(dirPath, { recursive: true });
         }
+      
+        await fs.promises.writeFile(fullPath, fileBuffer);
+        
+        let hostPath: string;
 
-        fs.writeFileSync(fullPath, fileBuffer);
-
-        const hostPath = `${this.configService.get('IMAGE_HOST')}/${folder}/${fileName}`;
+        if(folder === './') hostPath = `${this.configService.get('IMAGE_HOST')}/${fileName}`;
+        else hostPath = `${this.configService.get('IMAGE_HOST')}/${folder}/${fileName}`;
         console.log('hostPath', hostPath);
         return hostPath;
     }

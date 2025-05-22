@@ -12,7 +12,7 @@ if (process.env.CREATE_LOG_FILE === 'true') {
   transports.push(
     new winston.transports.DailyRotateFile({
       level: process.env.LOG_LEVEL || 'info',
-      filename: path.join(process.env.LOG_FILE_PATH || './public/logs', 'api_astro_tickets-%DATE%.log'),
+      filename: path.join(process.env.LOG_FILE_PATH || './public/logs', 'api_cms-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
       maxSize: '20m',

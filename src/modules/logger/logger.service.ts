@@ -12,11 +12,11 @@ export class NextLoggerService {
     }
 
     log(message: string, functionName?: string, data?: any) {
-        this.logger.info(`${message} -> ${functionName} -> ${data}`);
+        this.logger.info(`${message} -> ${functionName} -> ${data || 'No Data'}`);
     }
 
     error(message: string, functionName?: string, data?: string) {
-        this.logger.error(`${message} -> ${functionName} -> ${data}`);
+        this.logger.error(`${message} -> ${functionName} -> ${data || 'No Data'}`);
     }
 
     warn(message: string) {

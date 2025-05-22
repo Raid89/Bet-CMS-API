@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Applications } from './applications.schema';
 import { CreateApplicationDto, UpdateApplicationDto } from './dto/applications.dto';
-import { FileStorageService } from '../../services/file-storage.service';
+import { FileStorageService } from '../../common/file-storage.service';
 import { NextLoggerService } from '../../modules/logger/logger.service';
 import * as path from 'path';
 import * as fs from 'fs';

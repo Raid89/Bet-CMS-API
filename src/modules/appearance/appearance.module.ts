@@ -11,7 +11,7 @@ import { HomeImages, HomeImagesSchema } from './home/home.schema';
 import { LoggerModule } from '../logger/logger.module';
 import { AuthMiddleware } from '../../middlewares/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
-import { FileStorageService } from '../../services/file-storage.service';
+import { FileStorageService } from '../../common/file-storage.service';
 import { PokerImages, PokerImagesSchema, PokerUrl, PokerUrlSchema } from './poker/poker.schema';
 import { Logos, LogosSchema, Slides, SlidesSchema } from './logos/logos.schema';
 

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { NextLoggerService } from '../../logger/logger.service';
-import { FileStorageService } from '../../../services/file-storage.service';
+import { FileStorageService } from '../../../common/file-storage.service';
 import { Logos, Slides } from './logos.schema';
 import path from 'path';
 import * as fs from 'fs';

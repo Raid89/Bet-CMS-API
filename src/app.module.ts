@@ -15,6 +15,12 @@ import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
 import { PromotionsModule } from "./modules/promotions/promotions.module";
 import { ParameterizationModule } from "./modules/parameterization/parameterization.module";
+import { BlogModule } from './modules/blog/blog.module';
+import { BannerRegisterModule } from './modules/banner-register/banner-register.module';
+import { UsersModule } from './modules/users/users.module';
+import { SlotsModule } from './modules/slots/slots.module';
+import { TagsModule } from './modules/tags/tags.module';
+import { LayoutsModule } from './layouts/layouts.module';
 
 @Module({
   imports: [
@@ -23,7 +29,7 @@ import { ParameterizationModule } from "./modules/parameterization/parameterizat
       validationSchema: envValidationSchema,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../uploads'), // Ruta a la carpeta uploads fuera del proyecto
+      rootPath: join(__dirname, '../uploads'), // Ruta a la carpeta uploads fuera del proyecto
       serveRoot: '', // Ruta base para servir los archivos
     }),
     JwtModule.register({
@@ -44,6 +50,12 @@ import { ParameterizationModule } from "./modules/parameterization/parameterizat
     ApplicationsModule,
     PromotionsModule,
     ParameterizationModule,
+    BlogModule,
+    BannerRegisterModule,
+    UsersModule,
+    SlotsModule,
+    TagsModule,
+    LayoutsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

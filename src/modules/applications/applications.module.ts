@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Applications, ApplicationsSchema } from './applications.schema';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from '../logger/logger.module';
-import { FileStorageService } from '../../services/file-storage.service';
+import { FileStorageService } from '../../common/file-storage.service';
 
 @Module({
   imports: [
