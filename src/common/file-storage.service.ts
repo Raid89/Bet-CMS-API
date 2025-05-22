@@ -21,8 +21,11 @@ export class FileStorageService {
         }
       
         await fs.promises.writeFile(fullPath, fileBuffer);
-      
-        const hostPath = `${this.configService.get('IMAGE_HOST')}/${folder}/${fileName}`;
+        
+        let hostPath: string;
+
+        if(folder === './') hostPath = `${this.configService.get('IMAGE_HOST')}/${fileName}`;
+        else hostPath = `${this.configService.get('IMAGE_HOST')}/${folder}/${fileName}`;
         console.log('hostPath', hostPath);
         return hostPath;
     }

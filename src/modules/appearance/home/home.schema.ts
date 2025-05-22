@@ -12,7 +12,7 @@ export enum HomeImagesValidTypes {
     PAYMENT_METHOD = 'PAYMENT_METHOD',
 }
 
-@Schema()
+@Schema({ collection: 'homeimages' })
 export class HomeImages extends Document {
     @Prop({ required: false, type: String })
     path!: string;

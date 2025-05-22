@@ -17,6 +17,7 @@ import { BannerRegisterModule } from './modules/banner-register/banner-register.
 import { UsersModule } from './modules/users/users.module';
 import { SlotsModule } from './modules/slots/slots.module';
 import { TagsModule } from './modules/tags/tags.module';
+import { LayoutsModule } from './layouts/layouts.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { TagsModule } from './modules/tags/tags.module';
     UsersModule,
     SlotsModule,
     TagsModule,
+    LayoutsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
