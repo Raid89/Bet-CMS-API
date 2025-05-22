@@ -13,6 +13,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
+import { PromotionsModule } from "./modules/promotions/promotions.module";
+import { BlogModule } from './modules/blog/blog.module';
 import { BannerRegisterModule } from './modules/banner-register/banner-register.module';
 import { UsersModule } from './modules/users/users.module';
 import { SlotsModule } from './modules/slots/slots.module';
@@ -45,6 +47,8 @@ import { LayoutsModule } from './layouts/layouts.module';
     RoleModule,
     AppearanceModule,
     ApplicationsModule,
+    PromotionsModule,
+    BlogModule,
     BannerRegisterModule,
     UsersModule,
     SlotsModule,

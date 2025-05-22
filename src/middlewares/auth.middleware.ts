@@ -19,7 +19,7 @@ export class AuthMiddleware implements NestMiddleware {
             throw new UnauthorizedException('El encabezado de autorización falta.');
         }
 
-        const token = authHeader.split(' ')[1];
+        const token = authHeader.includes(' ') ? authHeader.split(' ')[1] : authHeader;
         try {
             const secret = this.configService.get<string>('JWT_SECRET');
             const decoded = this.jwtService.verify(token, { secret });

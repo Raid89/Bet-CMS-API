@@ -29,4 +29,13 @@ export class FileStorageService {
         console.log('hostPath', hostPath);
         return hostPath;
     }
+
+    public async deleteFile(folder: string, savedPath: string): Promise<void> {
+        const fileName = path.basename(savedPath);
+        const fullPath = path.join(this.baseUploadPath, folder, fileName);
+        
+        if (fs.existsSync(fullPath)) {
+            fs.unlinkSync(fullPath);
+        }
+    }
 }
