@@ -14,6 +14,7 @@ import { ApplicationsModule } from './modules/applications/applications.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RoleModule } from './modules/role/role.module';
 import { PromotionsModule } from "./modules/promotions/promotions.module";
+import { ParameterizationModule } from "./modules/parameterization/parameterization.module";
 import { BlogModule } from './modules/blog/blog.module';
 import { BannerRegisterModule } from './modules/banner-register/banner-register.module';
 import { UsersModule } from './modules/users/users.module';
@@ -48,6 +49,7 @@ import { LayoutsModule } from './layouts/layouts.module';
     AppearanceModule,
     ApplicationsModule,
     PromotionsModule,
+    ParameterizationModule,
     BlogModule,
     BannerRegisterModule,
     UsersModule,
