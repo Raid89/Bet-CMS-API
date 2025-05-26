@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Banners } from './banners.schema';
 import { CreateBannerDto, UpdateBannerDto } from './dto/banners.dto';
-import { FileStorageService } from '../../../services/file-storage.service';
+import { FileStorageService } from '../../../common/file-storage.service';
 
 @Injectable()
 export class BannersService {

@@ -1,33 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { IntegrationChannelsService } from './integration-channels.service';
-import { CreateIntegrationChannelDto } from './dto/create-integration-channel.dto';
-import { UpdateIntegrationChannelDto } from './dto/update-integration-channel.dto';
-import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ResponseIntegrationalChannelDto } from './dto/response-integrational-channel.dto';
-import { IntegrationChannelsDocument } from './schemas/integration-channels.schema';
+import { ApiOperation, ApiSecurity, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { CreateIntegrationChannelDto } from '../dto/integration-channel.dto';
 
-@ApiTags('Slots - Integration Channels')
-@Controller('slots')
+@ApiTags('Slots - Canales de Integración')
+@Controller('slots/integration-channels')
 export class IntegrationChannelsController {
-  constructor(private readonly integrationChannelsService: IntegrationChannelsService) {}
+  constructor(private readonly integrationChannelsService: IntegrationChannelsService) { }
 
-  @Post('create-channel')
-  @ApiBody({ type: CreateIntegrationChannelDto })
-  @ApiResponse({ status: 200, type: ResponseIntegrationalChannelDto })
-  async create(@Body() createIntegrationChannelDto: CreateIntegrationChannelDto): Promise<ResponseIntegrationalChannelDto> {
-    return await this.integrationChannelsService.createIntegrationChannel(createIntegrationChannelDto);
+  @Get()
+  @ApiSecurity('bearer')
+  @ApiOperation({ summary: 'Obtener todos los canales de integración' })
+  @ApiResponse({ status: 200, description: 'Lista de canales obtenida exitosamente' })
+  findAll() {
+    return this.integrationChannelsService.findAll();
   }
 
-  @Get('get-channels')
-  @ApiResponse({ status: 200, type: [IntegrationChannelsDocument] })
-  findAll(): Promise<IntegrationChannelsDocument[]> {
-    return this.integrationChannelsService.IntegrationChannelfindAll();
+  @Post()
+  @ApiSecurity('bearer')
+  @ApiOperation({ summary: 'Crear un nuevo canal de integración' })
+  @ApiResponse({ status: 201, description: 'Canal creado exitosamente' })
+  @ApiResponse({ status: 409, description: 'El canal ya existe' })
+  create(@Body() createIntegrationChannelDto: CreateIntegrationChannelDto) {
+    return this.integrationChannelsService.create(createIntegrationChannelDto);
   }
 
-  @Post('/delete-channel/:id')
-  @ApiParam({ name: 'id', type: String })
-  @ApiResponse({ status: 200, type: ResponseIntegrationalChannelDto })
-  async remove(@Param('id') id: string): Promise<ResponseIntegrationalChannelDto> {
-    return await this.integrationChannelsService.IntegrationChannelremove(id);
+  @Delete(':id')
+  @ApiSecurity('bearer')
+  @ApiOperation({ summary: 'Eliminar un canal de integración por ID' })
+  @ApiResponse({ status: 200, description: 'Canal eliminado exitosamente' })
+  @ApiResponse({ status: 404, description: 'Canal no encontrado' })
+  remove(@Param('id') id: string) {
+    return this.integrationChannelsService.remove(id);
   }
 }

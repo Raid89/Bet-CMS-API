@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { NextLoggerService } from '../../logger/logger.service';
 import { CreatePromoBannerDto, UpdatePromoBannerDto } from './dto/promo-banners.dto';
-import { FileStorageService } from '../../../services/file-storage.service';
+import { FileStorageService } from '../../../common/file-storage.service';
 
 @Injectable()
 export class PromoBannerService {

@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { LoggerModule } from '../logger/logger.module';
 import { AuthMiddleware } from '../../middlewares/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
-import { FileStorageService } from '../../services/file-storage.service';
+import { FileStorageService } from '../../common/file-storage.service';
 import { PromotionCategories, PromoCategoriesSchema } from "./promo-categories/promo-categories.schema";
 import { PromoCategoriesController } from "./promo-categories/promo-categories.controller";
 import { PromoCategoriesService } from "./promo-categories/promo-categories.service";

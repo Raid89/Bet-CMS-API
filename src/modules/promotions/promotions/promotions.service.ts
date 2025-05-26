@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { NextLoggerService } from '../../logger/logger.service';
 import { CreatePromoDto, UpdatePromoDto } from './dto/promotions.dto';
-import { FileStorageService } from '../../../services/file-storage.service';
+import { FileStorageService } from '../../../common/file-storage.service';
 import { PromotionCategories } from '../promo-categories/promo-categories.schema';
 var moment = require("moment");
 

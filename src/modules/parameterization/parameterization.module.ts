@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { LoggerModule } from '../logger/logger.module';
 import { AuthMiddleware } from '../../middlewares/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
-import { FileStorageService } from '../../services/file-storage.service';
+import { FileStorageService } from '../../common/file-storage.service';
 import { PathsController } from './paths/paths.controller';
 import { Paths, PathsSchema } from './paths/paths.schema';
 import { PathsService } from './paths/paths.service';

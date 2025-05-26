@@ -3,6 +3,18 @@ import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { CreatePathDto } from "../../paths/dto/paths.dto";
 
+export class GdDto {
+    @ApiProperty({ required: true, type: String, example: '4.648283' })
+    @IsString()
+    @IsNotEmpty()
+    latitud!: string;
+  
+    @ApiProperty({ required: true, type: String, example: '-74.247894' })
+    @IsString()
+    @IsNotEmpty()
+    longitud!: string;
+}
+
 export class CreatePointDto {
     @ApiProperty({ required: true, type: String, example: 'Nombre ruta' })
     @IsString()
@@ -39,18 +51,6 @@ export class CreatePointDto {
     @ValidateNested()
     @Type(() => GdDto)
     gd?: GdDto;
-}
-
-export class GdDto {
-    @ApiProperty({ required: true, type: String, example: '4.648283' })
-    @IsString()
-    @IsNotEmpty()
-    latitud!: string;
-  
-    @ApiProperty({ required: true, type: String, example: '-74.247894' })
-    @IsString()
-    @IsNotEmpty()
-    longitud!: string;
 }
 
 export class UpdatePointDto extends PartialType(CreatePointDto) {}

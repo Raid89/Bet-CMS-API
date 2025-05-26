@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Blogs } from './blogs.schema';
 import { BlogsDto } from './dto/blogs.dto';
-import { FileStorageService } from '../../../services/file-storage.service';
+import { FileStorageService } from '../../../common/file-storage.service';
 
 @Injectable()
 export class BlogsService {

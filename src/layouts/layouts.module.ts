@@ -9,6 +9,7 @@ import { LoggerModule } from 'src/modules/logger/logger.module';
 import { FileStorageService } from 'src/common/file-storage.service';
 import { LayoutController } from './home/layout.controller';
 import { LayoutService } from './home/layout.service';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -20,6 +21,6 @@ import { LayoutService } from './home/layout.service';
     LoggerModule
   ],
   controllers: [ImagesController, LayoutController],
-  providers: [ImagesService, LayoutService, FileStorageService],
+  providers: [ImagesService, LayoutService, FileStorageService, ConfigService],
 })
 export class LayoutsModule {}

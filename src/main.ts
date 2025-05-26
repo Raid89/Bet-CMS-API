@@ -7,7 +7,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Request } from 'express';
 
 async function bootstrap() {
-  let app = await NestFactory.create(AppModule);
+  let app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn'] // Solo errores y warnings
+  });
   const configService = app.get(ConfigService);
   const allowed_origins = configService.get('ALLOWED_ORIGINS');
   const allowed_headers = configService.get('ALLOWED_HEADERS').split(',').map((header: string) => header.trim());
