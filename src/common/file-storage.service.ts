@@ -20,7 +20,7 @@ export class FileStorageService {
           await fs.promises.mkdir(dirPath, { recursive: true });
         }
       
-        await fs.promises.writeFile(fullPath, fileBuffer);
+        await fs.promises.writeFile(fullPath, fileBuffer as NodeJS.ArrayBufferView);
         
         let hostPath: string;
 
