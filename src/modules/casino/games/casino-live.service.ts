@@ -235,4 +235,116 @@ export class CasinoLiveService {
       throw error;
     }
   }
+
+  // Channels methods
+  async getChannelCodes(): Promise<any> {
+    // Implementar lógica para obtener códigos de canal
+    return { channelCodes: [] };
+  }
+
+  async newIntegrationChannelCode(channelData: any): Promise<any> {
+    // Implementar lógica para crear nuevo código de canal
+    return { channelCode: channelData };
+  }
+
+  async deleteChannelCode(id: string): Promise<any> {
+    // Implementar lógica para eliminar código de canal
+    return { deleted: true };
+  }
+
+  // Banners methods
+  async addPromoBanner(bannerData: any, files: any): Promise<any> {
+    // Implementar lógica para añadir banner promocional
+    return { banner: bannerData };
+  }
+
+  async newGetCLBanners(): Promise<any> {
+    // Implementar lógica para obtener banners CL
+    return { banners: [] };
+  }
+
+  async removePromoBanner(id: string): Promise<any> {
+    // Implementar lógica para eliminar banner promocional
+    return { deleted: true };
+  }
+
+  async updatePromoBanner(id: string, bannerData: any, files: any): Promise<any> {
+    // Implementar lógica para actualizar banner promocional
+    return { updated: true };
+  }
+
+  // Categories methods
+  async getCategories(): Promise<any> {
+    // Implementar lógica para obtener categorías
+    return { categories: [] };
+  }
+
+  async newCategory(categoryData: any): Promise<any> {
+    // Implementar lógica para crear nueva categoría
+    return { category: categoryData };
+  }
+
+  async deleteCategory(id: string): Promise<any> {
+    // Implementar lógica para eliminar categoría
+    return { deleted: true };
+  }
+
+  async updateCategory(id: string, categoryData: any): Promise<any> {
+    // Implementar lógica para actualizar categoría
+    return { updated: true };
+  }
+
+  async getCategoriesCL(): Promise<any> {
+    // Implementar lógica para obtener categorías CL
+    return { categories: [] };
+  }
+
+  // Masive operations methods
+  async clGameMasiveCharge(gameData: any): Promise<any> {
+    // Implementar lógica para carga masiva de juegos
+    return { charged: true };
+  }
+
+  async deleteClGameMasive(gameData: any): Promise<any> {
+    // Implementar lógica para eliminación masiva de juegos
+    return { deleted: true };
+  }
+
+  // Additional methods
+  async getSingleCLGame(id: string): Promise<any> {
+    try {
+      const game = await this.casinoLiveModel.findById(id);
+      if (!game) {
+        throw new NotFoundException('Game not found');
+      }
+      return game;
+    } catch (error) {
+      throw new NotFoundException('Game not found');
+    }
+  }
+
+  async getGamesByTags(tagData: any): Promise<any> {
+    // Implementar lógica para obtener juegos por tags
+    return { games: [] };
+  }
+
+  async getGamesCriteria(limit: number, skip: number): Promise<any> {
+    try {
+      const games = await this.casinoLiveModel
+        .find()
+        .limit(limit)
+        .skip(skip)
+        .exec();
+
+      const total = await this.casinoLiveModel.countDocuments();
+
+      return {
+        games,
+        total,
+        base_url: this.configService.get<string>('BASE_URL') || 'http://localhost:3000'
+      };
+    } catch (error) {
+      throw new BadRequestException('Error fetching games by criteria');
+    }
+  }
 }
