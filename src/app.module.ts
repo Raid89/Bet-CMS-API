@@ -21,6 +21,7 @@ import { UsersModule } from './modules/users/users.module';
 import { SlotsModule } from './modules/slots/slots.module';
 import { TagsModule } from './modules/tags/tags.module';
 import { LayoutsModule } from './layouts/layouts.module';
+import { CasinoModule } from './modules/casino/casino.module';
 
 @Module({
   imports: [
@@ -55,9 +56,9 @@ import { LayoutsModule } from './layouts/layouts.module';
     PromotionsModule,
     ParameterizationModule,
     BlogModule,
-    BannerRegisterModule,
-    UsersModule,
+    BannerRegisterModule,    UsersModule,
     SlotsModule,
+    CasinoModule,
     TagsModule,
     LayoutsModule,
   ],
