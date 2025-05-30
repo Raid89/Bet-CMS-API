@@ -79,7 +79,6 @@ export class CasinoGamesController {
   async deleteGame(@Param('id') id: string) {
     return this.casinoGamesService.deleteGame(id);
   }
-
   @Get('cms/:limit/:skip')
   @ApiOperation({ summary: 'Obtener juegos de casino live para CMS con paginación' })
   @ApiParam({ name: 'limit', description: 'Número de elementos por página' })
@@ -92,13 +91,11 @@ export class CasinoGamesController {
     const skipNum = parseInt(skip) || 0;
     return this.casinoGamesService.getGamesCMS(limitNum, skipNum);
   }
-
   @Get('active')
   @ApiOperation({ summary: 'Obtener todos los juegos de casino live activos' })
   async getActiveGames() {
     return this.casinoGamesService.getActiveGames();
   }
-
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un juego de casino live por ID' })
   @ApiParam({ name: 'id', description: 'ID del juego de casino live' })
