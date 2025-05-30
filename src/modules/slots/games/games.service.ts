@@ -392,18 +392,35 @@ export class GamesService {
     } catch (error) {
       throw error;
     }
-  }
-  async setFeatureImage(id: string, req: any) {
+  }  async setFeatureImage(id: string, req: any) {
     try {
       console.log('Setting feature image for slot ID:', id);
-      const files = req.files;
+      console.log('Request object received:', JSON.stringify(req, null, 2));
       
-      if (!files || !files.feature) {
+      const files = req.files;
+      console.log('Files object:', JSON.stringify(files, null, 2));
+      
+      // Try different possible file locations
+      let feature = null;
+      if (files?.feature) {
+        feature = files.feature;
+      } else if (files?.image) {
+        feature = files.image;
+      } else if (Array.isArray(files) && files.length > 0) {
+        // Handle case where files is an array
+        feature = files[0];
+      } else if (files && Object.keys(files).length > 0) {
+        // Take the first available file
+        const firstKey = Object.keys(files)[0];
+        feature = files[firstKey];
+      }
+      
+      if (!feature) {
+        console.error('No feature image found. Available files:', Object.keys(files || {}));
         throw new Error('No feature image provided');
       }
 
-      console.log('Processing feature image');
-      const feature = files.feature;
+      console.log('Processing feature image:', feature.originalname || feature.name);
       const prefix = new Date().getTime();
       const originalName = feature.originalname || feature.name || 'feature.jpg';
       const featureName = `${prefix}-${originalName}`;
@@ -437,15 +454,41 @@ export class GamesService {
       throw error;
     }
   }
-
   async setBanner(id: string, req: any) {
     try {
+      console.log('Setting banner for slot ID:', id);
+      console.log('Request object received for banner:', JSON.stringify(req, null, 2));
+      
       const files = req.files;
-      if (files && files.banner) {
-        const banner = files.banner;
-        const prefix = new Date().getTime();
-        const bannerName = `${prefix}-${banner.originalname || banner.name}`;
+      console.log('Files object for banner:', JSON.stringify(files, null, 2));
+      
+      // Try different possible file locations
+      let banner = null;
+      if (files?.banner) {
+        banner = files.banner;
+      } else if (files?.image) {
+        banner = files.image;
+      } else if (Array.isArray(files) && files.length > 0) {
+        // Handle case where files is an array
+        banner = files[0];
+      } else if (files && Object.keys(files).length > 0) {
+        // Take the first available file
+        const firstKey = Object.keys(files)[0];
+        banner = files[firstKey];
+      }
+      
+      if (!banner) {
+        console.error('No banner file found. Available files:', Object.keys(files || {}));
+        throw new Error('No banner file provided');
+      }
+
+      console.log('Processing banner image:', banner.originalname || banner.name);
+      const prefix = new Date().getTime();
+      const bannerName = `${prefix}-${banner.originalname || banner.name}`;
+      
+      try {
         const bannerPath = await this.fileStorageService.saveFile(bannerName, 'banners', banner.buffer || banner);
+        console.log('Banner saved:', bannerPath);
         
         if (id && id !== 'undefined') {
           const result = await this.slotModel.findByIdAndUpdate(
@@ -453,19 +496,31 @@ export class GamesService {
             { banner: bannerPath },
             { new: true }
           );
+          
+          if (!result) {
+            throw new Error(`Slot with ID ${id} not found`);
+          }
+          
+          console.log('Banner updated successfully for slot');
           return result;
         } else {
           // Create new banner record
+          console.log('Creating new banner record');
           const newBanner = new this.bannerModel({
             path: bannerPath,
             date: new Date(),
             sort: 0
           });
-          return await newBanner.save();
+          const savedBanner = await newBanner.save();
+          console.log('New banner created successfully');
+          return savedBanner;
         }
+      } catch (saveError: any) {
+        console.error('Error saving banner:', saveError);
+        throw new Error(`Failed to save banner: ${saveError?.message || saveError}`);
       }
-      throw new Error('No banner file provided');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error in setBanner:', error);
       throw error;
     }
   }
