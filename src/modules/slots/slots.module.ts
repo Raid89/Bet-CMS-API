@@ -23,6 +23,7 @@ import { Category, CategorySchema } from './schemas/category.schema';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { FileStorageService } from 'src/common/file-storage.service';
 
 @Module({
     imports: [
@@ -42,6 +43,7 @@ import { ConfigService } from '@nestjs/config';
         BannerService,
         CategoriesService,
         ConfigService,
+        FileStorageService,
     ],
     controllers: [
         IntegrationChannelsController,

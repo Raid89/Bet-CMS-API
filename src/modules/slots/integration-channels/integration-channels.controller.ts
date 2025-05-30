@@ -4,11 +4,11 @@ import { ApiOperation, ApiSecurity, ApiTags, ApiResponse } from '@nestjs/swagger
 import { CreateIntegrationChannelDto } from '../dto/integration-channel.dto';
 
 @ApiTags('Slots - Canales de Integración')
-@Controller('slots/integration-channels')
+@Controller('slots')
 export class IntegrationChannelsController {
   constructor(private readonly integrationChannelsService: IntegrationChannelsService) { }
 
-  @Get()
+  @Get('get-channels')
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Obtener todos los canales de integración' })
   @ApiResponse({ status: 200, description: 'Lista de canales obtenida exitosamente' })
@@ -16,7 +16,7 @@ export class IntegrationChannelsController {
     return this.integrationChannelsService.findAll();
   }
 
-  @Post()
+  @Post('create-channel')
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Crear un nuevo canal de integración' })
   @ApiResponse({ status: 201, description: 'Canal creado exitosamente' })
@@ -25,7 +25,7 @@ export class IntegrationChannelsController {
     return this.integrationChannelsService.create(createIntegrationChannelDto);
   }
 
-  @Delete(':id')
+  @Delete('delete-channel/:id')
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Eliminar un canal de integración por ID' })
   @ApiResponse({ status: 200, description: 'Canal eliminado exitosamente' })

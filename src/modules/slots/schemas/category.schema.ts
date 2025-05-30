@@ -14,7 +14,7 @@ export class Category {
   @Prop({ type: String, required: false, default: '-' })
   label?: string;
 
-  @Prop({ type: Number, default: 100 })
+  @Prop({ type: Number })
   sort?: number;
 }
 

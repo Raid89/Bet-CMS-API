@@ -30,7 +30,11 @@ import { LayoutsModule } from './layouts/layouts.module';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../uploads'), // Ruta a la carpeta uploads fuera del proyecto
-      serveRoot: '', // Ruta base para servir los archivos
+      serveRoot: '/uploads', // Ruta base para servir los archivos
+      serveStaticOptions: {
+        index: false, // Deshabilita la búsqueda de 'index.html'
+        redirect: false, // Deshabilita redirecciones automáticas
+      },
     }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'defaultSecret',
