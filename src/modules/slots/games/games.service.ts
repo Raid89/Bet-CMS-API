@@ -27,16 +27,19 @@ export class GamesService {
     private readonly slotimageModel: Model<Slotimage>,
     private readonly fileStorageService: FileStorageService,
     private readonly configService: ConfigService
-  ) { }
-  async newSlot(gameData: SlotsDto, files: any) {
+  ) { }  async newSlot(gameData: SlotsDto, files: any) {
     try {
-      console.log('Received gameData:', typeof gameData.microSite);
+      console.log('Creating new slot with data:', { gameCode: gameData.gameCode, microSite: gameData.microSite });
+      console.log('Files received:', files ? Object.keys(files) : 'No files');
+      
       const isMicroSite = gameData.microSite + '';
       if (isMicroSite == 'true' && gameData.gameId) {
+        console.log('Processing microsite images for gameId:', gameData.gameId);
         const savedFiles = await this.saveMicroSiteImage(files, gameData.gameId);
-        console.log('Saved files:', savedFiles);
+        console.log('Saved microsite files:', savedFiles);
         gameData = { ...gameData, ...savedFiles };
       } else {
+        console.log('Not a microsite, removing microsite fields');
         delete gameData.gDescTitle;
         delete gameData.gDescSubtitle;
         delete gameData.gDescText;
@@ -44,59 +47,98 @@ export class GamesService {
         delete gameData.wGameDesc;
       }
 
+      // Process tags and categories
       gameData.tags = gameData.tags ? gameData.tags.split(',') : null;
       gameData.date = moment().unix() * 1000;
       gameData.sort = 0;
       gameData.category = gameData.category ? gameData.category.split(',') : null;
 
-      if (files.pdf) {
+      // Handle PDF file upload
+      if (files?.pdf) {
+        console.log('Processing PDF file');
         const pdf = files.pdf;
         const prefix = new Date().getTime();
         const pdfName = `${prefix}-${pdf.originalname || pdf.name}`;
-        gameData.roules = await this.fileStorageService.saveFile(pdfName, 'pdf', pdf.buffer || pdf);
+        try {
+          gameData.roules = await this.fileStorageService.saveFile(pdfName, 'pdf', pdf.buffer || pdf);
+          console.log('PDF saved successfully:', gameData.roules);
+        } catch (pdfError: any) {
+          console.error('Error saving PDF:', pdfError);
+          throw new Error(`Error processing PDF file: ${pdfError?.message || pdfError}`);
+        }
       }
 
+      // Validate slot doesn't exist
       const validationSlotExist = await this.validationSlotExist(gameData.gameCode, gameData.integrationChannelCode);
-
       if (validationSlotExist) {
         throw new ConflictException(`Slot with gameCode ${gameData.gameCode} and channel ${gameData.integrationChannelCode} already exists.`);
       }
 
+      console.log('Creating slot in database');
       const newGame = new this.slotModel(gameData);
       const savedGame = await newGame.save();
+      console.log('Slot created successfully with ID:', savedGame._id);
+      
       return savedGame;
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error in newSlot:', error);
       throw error;
     }
   }
-
   async saveMicroSiteImage(files: any, gameId: string) {
-    const saveFile = (file: any, fileName: any) => {
+    const saveFile = async (file: any, fileName: string) => {
       if (!file) {
-        console.error(`Invalid file or file.mv method: ${file}`);
-        throw new Error(`Invalid file or file.mv method: ${file}`);
+        console.error(`Invalid file: ${file}`);
+        throw new Error(`Invalid file: ${file}`);
       }
-      return this.fileStorageService.saveFile(fileName, this.FOLDER_PATH, file);
+      
+      // Handle different file structures (buffer vs multer file)
+      const fileBuffer = file.buffer || file;
+      const fileMimetype = file.mimetype || file.mimeType || 'image/jpeg';
+      
+      if (!fileBuffer) {
+        throw new Error(`No file buffer found for ${fileName}`);
+      }
+      
+      return await this.fileStorageService.saveFile(fileName, this.FOLDER_PATH, fileBuffer);
     };
 
     const savedFiles: any = {};
 
-    if (files?.msBanner) {
-      const extension = files.msBanner.mimetype.split("/")[1];
-      savedFiles.msBanner = await saveFile(files.msBanner, `msBanner_${gameId}.${extension}`);
+    try {
+      if (files?.msBanner) {
+        const extension = files.msBanner.mimetype ? files.msBanner.mimetype.split("/")[1] : 'jpg';
+        const fileName = `msBanner_${gameId}.${extension}`;
+        savedFiles.msBanner = await saveFile(files.msBanner, fileName);
+        console.log(`Saved msBanner: ${savedFiles.msBanner}`);
+      }
+      
+      if (files?.msBannerMod) {
+        const extension = files.msBannerMod.mimetype ? files.msBannerMod.mimetype.split("/")[1] : 'jpg';
+        const fileName = `msBannerMod_${gameId}.${extension}`;
+        savedFiles.msBannerMod = await saveFile(files.msBannerMod, fileName);
+        console.log(`Saved msBannerMod: ${savedFiles.msBannerMod}`);
+      }
+      
+      // Handle msIllustrative as array or single file
+      const illustrativeFiles = files['msIllustrative[]'] || files.msIllustrative;
+      if (illustrativeFiles) {
+        const filesArray = Array.isArray(illustrativeFiles) ? illustrativeFiles : [illustrativeFiles];
+        savedFiles.msIllustrative = await Promise.all(
+          filesArray.map(async (file, index) => {
+            const extension = file.mimetype ? file.mimetype.split("/")[1] : 'jpg';
+            const fileName = `msIllustrative_${index}_${gameId}.${extension}`;
+            const savedPath = await saveFile(file, fileName);
+            console.log(`Saved msIllustrative[${index}]: ${savedPath}`);
+            return savedPath;
+          })
+        );
+      }      console.log('All microsite files saved successfully:', savedFiles);
+      return savedFiles;
+    } catch (error: any) {
+      console.error('Error saving microsite images:', error);
+      throw new Error(`Failed to save microsite images: ${error?.message || error}`);
     }
-    if (files?.msBannerMod) {
-      const extension = files.msBannerMod.mimetype.split("/")[1];
-      savedFiles.msBannerMod = await saveFile(files.msBannerMod, `msBannerMod_${gameId}.${extension}`);
-    }
-    if (files && files['msIllustrative[]'] && Array.isArray(files['msIllustrative[]'])) {
-      savedFiles.msIllustrative = await Promise.all(files['msIllustrative[]'].map((file, index) => {
-        const extension = file.mimetype.split("/")[1];
-        return saveFile(file, `msIllustrative_${index}_${gameId}.${extension}`);
-      }));
-    }
-
-    return savedFiles;
   }
 
   async validationSlotExist(gameCode?: string, channel?: string) {
@@ -262,37 +304,66 @@ export class GamesService {
       throw error;
     }
   }
-
   async updateSlot(id: string, updateData: any, files: any) {
     try {
+      console.log('Updating slot with ID:', id);
+      console.log('Update data received:', { gameCode: updateData.gameCode, microSite: updateData.microSite });
+      console.log('Files received for update:', files ? Object.keys(files) : 'No files');
+
+      // Handle file uploads if present
       if (files && Object.keys(files).length > 0) {
+        console.log('Processing files for update');
+        
+        // Handle microsite images
         if (updateData.microSite === 'true') {
-          const savedFiles = await this.saveMicroSiteImage(files, updateData.gameId || id);
+          console.log('Processing microsite images for update');
+          const gameId = updateData.gameId || id;
+          const savedFiles = await this.saveMicroSiteImage(files, gameId);
+          console.log('Updated microsite files:', savedFiles);
           updateData = { ...updateData, ...savedFiles };
         }
 
+        // Handle PDF file upload
         if (files.pdf) {
+          console.log('Processing PDF file for update');
           const pdf = files.pdf;
           const prefix = new Date().getTime();
           const pdfName = `${prefix}-${pdf.originalname || pdf.name}`;
-          updateData.roules = await this.fileStorageService.saveFile(pdfName, 'pdf', pdf.buffer || pdf);
+          try {
+            updateData.roules = await this.fileStorageService.saveFile(pdfName, 'pdf', pdf.buffer || pdf);
+            console.log('PDF updated successfully:', updateData.roules);
+          } catch (pdfError: any) {
+            console.error('Error updating PDF:', pdfError);
+            throw new Error(`Error processing PDF file: ${pdfError?.message || pdfError}`);
+          }
         }
       }
 
+      // Process tags and categories if they are strings
       if (updateData.tags && typeof updateData.tags === 'string') {
         updateData.tags = updateData.tags.split(',');
+        console.log('Processed tags:', updateData.tags);
       }
       if (updateData.category && typeof updateData.category === 'string') {
         updateData.category = updateData.category.split(',');
+        console.log('Processed categories:', updateData.category);
       }
 
+      console.log('Updating slot in database');
       const result = await this.slotModel.findByIdAndUpdate(
         id,
         updateData,
         { new: true }
       );
+      
+      if (!result) {
+        throw new Error(`Slot with ID ${id} not found`);
+      }
+      
+      console.log('Slot updated successfully');
       return result;
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error in updateSlot:', error);
       throw error;
     }
   }
@@ -322,25 +393,47 @@ export class GamesService {
       throw error;
     }
   }
-
   async setFeatureImage(id: string, req: any) {
     try {
+      console.log('Setting feature image for slot ID:', id);
       const files = req.files;
-      if (files && files.feature) {
-        const feature = files.feature;
-        const prefix = new Date().getTime();
-        const featureName = `${prefix}-${feature.originalname || feature.name}`;
-        const featurePath = await this.fileStorageService.saveFile(featureName, 'slots', feature.buffer || feature);
+      
+      if (!files || !files.feature) {
+        throw new Error('No feature image provided');
+      }
+
+      console.log('Processing feature image');
+      const feature = files.feature;
+      const prefix = new Date().getTime();
+      const originalName = feature.originalname || feature.name || 'feature.jpg';
+      const featureName = `${prefix}-${originalName}`;
+      
+      try {
+        const featurePath = await this.fileStorageService.saveFile(
+          featureName, 
+          'slots', 
+          feature.buffer || feature
+        );
+        console.log('Feature image saved:', featurePath);
         
         const result = await this.slotModel.findByIdAndUpdate(
           id,
           { feature: featurePath },
           { new: true }
         );
+        
+        if (!result) {
+          throw new Error(`Slot with ID ${id} not found`);
+        }
+        
+        console.log('Feature image updated successfully for slot');
         return result;
+      } catch (saveError: any) {
+        console.error('Error saving feature image:', saveError);
+        throw new Error(`Failed to save feature image: ${saveError?.message || saveError}`);
       }
-      throw new Error('No feature image provided');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error in setFeatureImage:', error);
       throw error;
     }
   }

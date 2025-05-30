@@ -7,8 +7,7 @@ import { Request } from 'express';
 @ApiTags('Slots - Juegos')
 @Controller('slots')
 export class GamesController {
-  constructor(private readonly gamesService: GamesService) {}
-  @Post('new-slot')
+  constructor(private readonly gamesService: GamesService) {}  @Post('new-slot')
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Crear un nuevo slot/juego' })
   @ApiConsumes('multipart/form-data')
@@ -17,24 +16,35 @@ export class GamesController {
   @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
   @UseInterceptors(AnyFilesInterceptor())
   newSlot(@Body() createGameDto: any, @UploadedFiles() files: any) {
-    // Convert files array to object structure similar to req.files
-    const filesObject: any = {};
-    if (files && files.length > 0) {
-      files.forEach((file: any) => {
-        if (filesObject[file.fieldname]) {
-          // Handle multiple files with same fieldname (like msIllustrative[])
-          if (!Array.isArray(filesObject[file.fieldname])) {
-            filesObject[file.fieldname] = [filesObject[file.fieldname]];
+    try {
+      console.log('Controller - Received files:', files ? files.length : 0);
+      console.log('Controller - Received data keys:', Object.keys(createGameDto));
+      
+      // Convert files array to object structure similar to req.files
+      const filesObject: any = {};
+      if (files && files.length > 0) {
+        files.forEach((file: any) => {
+          console.log(`Processing file: ${file.fieldname}, originalname: ${file.originalname}`);
+          
+          if (filesObject[file.fieldname]) {
+            // Handle multiple files with same fieldname (like msIllustrative[])
+            if (!Array.isArray(filesObject[file.fieldname])) {
+              filesObject[file.fieldname] = [filesObject[file.fieldname]];
+            }
+            filesObject[file.fieldname].push(file);
+          } else {
+            filesObject[file.fieldname] = file;
           }
-          filesObject[file.fieldname].push(file);
-        } else {
-          filesObject[file.fieldname] = file;
-        }
-      });
+        });
+      }
+      
+      console.log('Controller - Processed files object keys:', Object.keys(filesObject));
+      return this.gamesService.newSlot(createGameDto, filesObject);
+    } catch (error: any) {
+      console.error('Controller error in newSlot:', error);
+      throw error;
     }
-
-    return this.gamesService.newSlot(createGameDto, filesObject);
-  }  @Get('get-all/:limit/:skip')
+  }@Get('get-all/:limit/:skip')
   @ApiOperation({ summary: 'Obtener todos los slots con paginación' })
   @ApiQuery({ name: 'criteria', required: false, description: 'Criterio de búsqueda opcional' })
   getSlots(
@@ -85,27 +95,39 @@ export class GamesController {
   getAllSlotsByCategoryId(@Param('id') id: string) {
     return this.gamesService.getAllSlotsByCategoryId(id);
   }
-
   @Post('update-single-slot/:id')
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Actualizar un slot específico' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(AnyFilesInterceptor())
   updateSlot(@Param('id') id: string, @Body() updateData: any, @UploadedFiles() files: any) {
-    const filesObject: any = {};
-    if (files && files.length > 0) {
-      files.forEach((file: any) => {
-        if (filesObject[file.fieldname]) {
-          if (!Array.isArray(filesObject[file.fieldname])) {
-            filesObject[file.fieldname] = [filesObject[file.fieldname]];
+    try {
+      console.log('Controller - Updating slot ID:', id);
+      console.log('Controller - Received files for update:', files ? files.length : 0);
+      console.log('Controller - Update data keys:', Object.keys(updateData));
+      
+      const filesObject: any = {};
+      if (files && files.length > 0) {
+        files.forEach((file: any) => {
+          console.log(`Processing update file: ${file.fieldname}, originalname: ${file.originalname}`);
+          
+          if (filesObject[file.fieldname]) {
+            if (!Array.isArray(filesObject[file.fieldname])) {
+              filesObject[file.fieldname] = [filesObject[file.fieldname]];
+            }
+            filesObject[file.fieldname].push(file);
+          } else {
+            filesObject[file.fieldname] = file;
           }
-          filesObject[file.fieldname].push(file);
-        } else {
-          filesObject[file.fieldname] = file;
-        }
-      });
+        });
+      }
+      
+      console.log('Controller - Processed update files object keys:', Object.keys(filesObject));
+      return this.gamesService.updateSlot(id, updateData, filesObject);
+    } catch (error: any) {
+      console.error('Controller error in updateSlot:', error);
+      throw error;
     }
-    return this.gamesService.updateSlot(id, updateData, filesObject);
   }
 
   @Post('update-single-banner/:id')
