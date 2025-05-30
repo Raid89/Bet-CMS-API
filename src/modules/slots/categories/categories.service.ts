@@ -117,13 +117,21 @@ export class CategoriesService {
       throw new BadRequestException('Failed to delete category');
     }
   }
-
   async findAll(): Promise<CategoryDocument[]> {
     try {
       return await this.categoryModel.find().sort({ sort: 1, date: -1 }).exec();
     } catch (error: any) {
       this.logger.error('Error fetching all categories:', error);
       throw new BadRequestException('Failed to fetch categories');
+    }
+  }
+
+  async getTotalCategories(): Promise<number> {
+    try {
+      return await this.categoryModel.countDocuments().exec();
+    } catch (error: any) {
+      this.logger.error('Error counting categories:', error);
+      throw new BadRequestException('Failed to count categories');
     }
   }
 }

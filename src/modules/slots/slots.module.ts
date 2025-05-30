@@ -21,6 +21,7 @@ import { Slotimage, SlotimageSchema } from './schemas/slotimage.schema';
 import { Banner, BannerSchema } from './schemas/banner.schema';
 import { Category, CategorySchema } from './schemas/category.schema';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { FileStorageService } from 'src/common/file-storage.service';
@@ -36,14 +37,14 @@ import { FileStorageService } from 'src/common/file-storage.service';
         ]),
         LoggerModule,
         JwtModule
-    ],
-    providers: [
+    ],    providers: [
         IntegrationChannelsService,
         GamesService,
         BannerService,
         CategoriesService,
         ConfigService,
         FileStorageService,
+        AuthGuard,
     ],
     controllers: [
         IntegrationChannelsController,

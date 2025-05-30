@@ -18,18 +18,18 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Obtener categorías con paginación' })
   @ApiResponse({ status: 200, description: 'Lista de categorías paginadas.' })
   @ApiResponse({ status: 400, description: 'Error en la solicitud. Verifique los parámetros de paginación.' })
-  @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
-  async findPaginated(
+  @ApiResponse({ status: 500, description: 'Error interno del servidor.' })  async findPaginated(
     @Param('limit') limit: number,
     @Param('skip') skip: number
   ) {
     const categories = await this.categoriesService.findPaginated(limit, skip);
+    const total = await this.categoriesService.getTotalCategories();
     return {
       ok: true,
       imagePath: `${this.configService.get('IMAGE_HOST')}/slots/`,
       data: categories,
-      total: categories.length,
-    }
+      total
+    };
   }
 
   @Get('categories/all')

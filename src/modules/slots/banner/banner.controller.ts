@@ -1,33 +1,51 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { 
+  Controller, 
+  Get, 
+  Post, 
+  Body, 
+  Param, 
+  Delete, 
+  UseInterceptors,
+  UploadedFiles,
+  Req,
+  UseGuards
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiSecurity, ApiConsumes } from '@nestjs/swagger';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { BannerService } from './banner.service';
+import { Request } from 'express';
+import { AuthGuard } from '../../../guards/auth.guard';
 
-
-@Controller('banner')
+@ApiTags('Slots - Banner')
+@Controller('slots')
 export class BannerController {
   constructor(private readonly bannerService: BannerService) {}
-
-  @Post()
-  create(@Body() createBannerDto: any) {
-    return this.bannerService.create(createBannerDto);
+  @Post('banners/new-banner')
+  @UseGuards(AuthGuard)
+  @ApiSecurity('bearer')
+  @ApiOperation({ summary: 'Crear nuevo banner de slots' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(AnyFilesInterceptor())
+  addSlotBanner(@UploadedFiles() files: any, @Req() req: Request) {
+    const filesObject: any = {};
+    if (files && files.length > 0) {
+      files.forEach((file: any) => {
+        filesObject[file.fieldname] = file;
+      });
+    }
+    return this.bannerService.addSlotBanner({ files: filesObject, body: req.body });
   }
 
-  @Get()
-  findAll() {
-    return this.bannerService.findAll();
+  @Get('banners/get-banners')
+  @ApiOperation({ summary: 'Obtener todos los banners de slots' })
+  getSlotBanners() {
+    return this.bannerService.getSlotBanners();
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bannerService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBannerDto: any) {
-    return this.bannerService.update(+id, updateBannerDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bannerService.remove(+id);
+  @Post('banners/remove-banner/:id')
+  @UseGuards(AuthGuard)
+  @ApiSecurity('bearer')
+  @ApiOperation({ summary: 'Eliminar banner de slots por ID' })
+  removeSlotBanner(@Param('id') id: string) {
+    return this.bannerService.removeSlotBanner(id);
   }
 }
