@@ -9,7 +9,6 @@ import {
   UseInterceptors,
   UploadedFiles,
   Req,
-  UseGuards,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import {
@@ -22,7 +21,6 @@ import {
 import { Request } from 'express';
 import { CasinoLiveService } from './casino-live.service';
 import { CreateCasinoLiveDto, UpdateCasinoLiveDto } from '../dto/casino-live.dto';
-import { AuthGuard } from '../../../guards/auth.guard';
 
 @ApiTags('Casino Live ND')
 @Controller()
@@ -31,7 +29,6 @@ export class CasinoLiveController {
 
   // Channels
   @Get('clnd/get-integration-channel-codes')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Obtener códigos de canal de integración' })
   async getChannelCodes() {
@@ -39,7 +36,6 @@ export class CasinoLiveController {
   }
 
   @Post('clnd/new-integrationChannelCode')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Crear nuevo código de canal de integración' })
   async newIntegrationChannelCode(@Body() channelData: any) {
@@ -47,7 +43,6 @@ export class CasinoLiveController {
   }
 
   @Delete('clnd/delete-channel-code/:id')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Eliminar código de canal' })
   @ApiParam({ name: 'id', description: 'ID del canal' })
@@ -57,7 +52,6 @@ export class CasinoLiveController {
 
   // Games
   @Post('clnd/new-game')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Crear un nuevo juego de casino live ND' })
   @ApiConsumes('multipart/form-data')
@@ -71,7 +65,6 @@ export class CasinoLiveController {
   }
 
   @Put('clnd/update-game/:id')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Actualizar un juego de casino live ND' })
   @ApiParam({ name: 'id', description: 'ID del juego' })
@@ -87,7 +80,6 @@ export class CasinoLiveController {
   }
 
   @Delete('clnd/delete-game/:id')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Eliminar un juego de casino live ND' })
   @ApiParam({ name: 'id', description: 'ID del juego' })
@@ -129,7 +121,6 @@ export class CasinoLiveController {
 
   // Banners
   @Post('clnd/banners/new-banner')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Crear nuevo banner promocional' })
   @ApiConsumes('multipart/form-data')
@@ -151,7 +142,6 @@ export class CasinoLiveController {
   }
 
   @Post('clnd/banners/remove-banner/:id')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Eliminar banner promocional' })
   @ApiParam({ name: 'id', description: 'ID del banner' })
@@ -160,7 +150,6 @@ export class CasinoLiveController {
   }
 
   @Post('clnd/update-single-banner/:id')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Actualizar banner individual' })
   @ApiParam({ name: 'id', description: 'ID del banner' })
@@ -182,7 +171,6 @@ export class CasinoLiveController {
   }
 
   @Post('cl/nd/get-categories')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Crear nueva categoría' })
   async newCategory(@Body() categoryData: any) {
@@ -190,7 +178,6 @@ export class CasinoLiveController {
   }
 
   @Delete('cl/nd/categories/:id')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Eliminar categoría' })
   @ApiParam({ name: 'id', description: 'ID de la categoría' })
@@ -199,7 +186,6 @@ export class CasinoLiveController {
   }
 
   @Put('cl/nd/categories/:id')
-  @UseGuards(AuthGuard)
   @ApiSecurity('bearer')
   @ApiOperation({ summary: 'Actualizar categoría' })
   @ApiParam({ name: 'id', description: 'ID de la categoría' })

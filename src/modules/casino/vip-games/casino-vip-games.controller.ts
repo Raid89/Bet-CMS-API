@@ -9,12 +9,10 @@ import {
   Query,
   UploadedFiles,
   UseInterceptors,
-  UseGuards,
   Req,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
-import { AuthGuard } from '../../../guards/auth.guard';
 import { CasinoVipGamesService } from './casino-vip-games.service';
 
 @Controller('clnd-vip')
@@ -47,7 +45,6 @@ export class CasinoVipGamesController {
   }
 
   @Get('get-integration-channel-codes')
-  @UseGuards(AuthGuard)
   async getChannelCodes() {
     const integrationChannelCodes = await this.casinoVipGamesService.getChannelCodes();
     return {
@@ -56,7 +53,6 @@ export class CasinoVipGamesController {
   }
 
   @Post('new-integrationChannelCode')
-  @UseGuards(AuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async newIntegrationChannelCode(
     @Body() body: any,
@@ -70,7 +66,6 @@ export class CasinoVipGamesController {
   }
 
   @Delete('delete-channel-code/:id')
-  @UseGuards(AuthGuard)
   async deleteChannelCode(@Param('id') id: string) {
     const deleted = await this.casinoVipGamesService.deleteChannelCode(id);
     return {
@@ -79,7 +74,6 @@ export class CasinoVipGamesController {
   }
 
   @Post('new-game')
-  @UseGuards(AuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async newGame(
     @Body() body: any,
@@ -93,7 +87,6 @@ export class CasinoVipGamesController {
   }
 
   @Put('update-game/:id')
-  @UseGuards(AuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async updateGame(
     @Param('id') id: string,
@@ -108,7 +101,6 @@ export class CasinoVipGamesController {
   }
 
   @Delete('delete-game/:id')
-  @UseGuards(AuthGuard)
   async deleteGame(@Param('id') id: string) {
     const deleted = await this.casinoVipGamesService.deleteGame(id);
     return {
@@ -168,7 +160,6 @@ export class CasinoVipGamesController {
   }
 
   @Post('banners/new-banner')
-  @UseGuards(AuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async addPromoBanner(
     @Req() req: any,
@@ -188,13 +179,11 @@ export class CasinoVipGamesController {
   }
 
   @Post('banners/remove-banner/:id')
-  @UseGuards(AuthGuard)
   async removePromoBanner(@Param('id') id: string) {
     return await this.casinoVipGamesService.removePromoBanner(id);
   }
 
   @Post('update-single-banner/:id')
-  @UseGuards(AuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async updatePromoBanner(
     @Param('id') id: string,
@@ -214,7 +203,6 @@ export class CasinoVipGamesController {
   }
 
   @Post('get-categories')
-  @UseGuards(AuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async newCategory(
     @Body() body: any,
@@ -231,7 +219,6 @@ export class CasinoVipGamesController {
   }
 
   @Delete('categories/:id')
-  @UseGuards(AuthGuard)
   async deleteCategory(@Param('id') id: string) {
     const deleted = await this.casinoVipGamesService.deleteCategory(id);
     return {
@@ -240,7 +227,6 @@ export class CasinoVipGamesController {
   }
 
   @Put('categories/:id')
-  @UseGuards(AuthGuard)
   async updateCategory(@Param('id') id: string, @Body() body: any) {
     const updatedCategory = await this.casinoVipGamesService.updateCategory(id, body);
     return {
