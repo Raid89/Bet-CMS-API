@@ -119,7 +119,7 @@ export class CasinoGamesController {
     return {
       games,
       total,
-      base_url: process.env.IMAGESHOST + "/" + "cl/",
+      base_url: process.env.IMAGE_HOST + "/" + "cl/",
     };
   }  @Get('clnd/get-cms-filter/:limit/:skip')
   @ApiOperation({ summary: 'Obtener juegos filtrados para CMS' })
@@ -141,14 +141,14 @@ export class CasinoGamesController {
     if(categoryId === ""){
       return {
         total: response.total, 
-        base_url: process.env.IMAGESHOST + "/" + "cl/", 
+        base_url: process.env.IMAGE_HOST + "/" + "cl/", 
         games: response.games
       };
     } else {
       const response2 = await this.casinoGamesService.getFilterGamesCLCMSArray(limitNum, skipNum, criteria, integrationChannelCode, categoryId);
       return {
         total: response.total + response2.total, 
-        base_url: process.env.IMAGESHOST + "/" + "cl/", 
+        base_url: process.env.IMAGE_HOST + "/" + "cl/", 
         games: [...response.games, ...response2.games].sort((a: any, b: any) => a.position - b.position)
       };
     }
@@ -160,7 +160,7 @@ export class CasinoGamesController {
     const games = await this.casinoGamesService.getCLGames(iosVersion);
     return {
       games,
-      base_url: process.env.IMAGESHOST + "/" + "cl/",
+      base_url: process.env.IMAGE_HOST + "/" + "cl/",
     };
   }
 
@@ -238,7 +238,7 @@ export class CasinoGamesController {
     const categories = await this.casinoGamesService.getCategoriesCL(iosVersion);
     return {
       categories,
-      base_url: process.env.IMAGESHOST + "/" + "cl/",
+      base_url: process.env.IMAGE_HOST + "/" + "cl/",
     };
   }
 
@@ -268,7 +268,7 @@ export class CasinoGamesController {
     const result = await this.casinoGamesService.getGamesByTags(tags || [], limit || 10);
     return { 
       result, 
-      base_url: process.env.IMAGESHOST + "/" + "cl/",
+      base_url: process.env.IMAGE_HOST + "/" + "cl/",
     };
   }  @Get('cl/nd/get-games-criteria/:limit/:skip')
   @ApiOperation({ summary: 'Obtener juegos por criterios' })
@@ -286,7 +286,7 @@ export class CasinoGamesController {
     const result = await this.casinoGamesService.getGamesCriteria(limitNum, skipNum, criteria, iosVersion);
     return { 
       result, 
-      base_url: process.env.IMAGESHOST + "/" + "cl/",
+      base_url: process.env.IMAGE_HOST + "/" + "cl/",
     };
   }
 }

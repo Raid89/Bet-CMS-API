@@ -31,7 +31,7 @@ import { CasinoModule } from './modules/casino/casino.module';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../uploads'), // Ruta a la carpeta uploads fuera del proyecto
-      serveRoot: '/uploads', // Ruta base para servir los archivos
+      serveRoot: '/', // Ruta base para servir los archivos
       serveStaticOptions: {
         index: false, // Deshabilita la búsqueda de 'index.html'
         redirect: false, // Deshabilita redirecciones automáticas
