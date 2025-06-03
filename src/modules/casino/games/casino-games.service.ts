@@ -219,6 +219,7 @@ export class CasinoGamesService {
       }
 
       // Handle main image and icon
+      console.log('Files received:', files);
       if (!files?.image || !files?.icon) {
         throw new BadRequestException('Both image and icon files are required');
       }
