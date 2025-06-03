@@ -60,7 +60,10 @@ export class CasinoGamesController {
     @UploadedFiles() files: any,
     @Req() req: Request
   ) {
-    return await this.casinoGamesService.newGameCasinoLive(createGameDto, files);
+    let image = {image: null, icon: null};
+    image.image = files.filter((file: any) => file.fieldname === 'image')[0];
+    image.icon = files.filter((file: any) => file.fieldname === 'icon')[0];
+    return await this.casinoGamesService.newGameCasinoLive(createGameDto, image);
   }
 
   @Put('clnd/update-game/:id')
