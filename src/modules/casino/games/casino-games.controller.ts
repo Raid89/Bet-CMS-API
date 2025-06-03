@@ -26,18 +26,22 @@ import { CreateCasinoLiveDto, UpdateCasinoLiveDto } from '../dto/casino-live.dto
 @Controller()
 export class CasinoGamesController {
   constructor(private readonly casinoGamesService: CasinoGamesService) {}
-  
-  // Channels
+    // Channels
   @Get('clnd/get-integration-channel-codes')
   @ApiOperation({ summary: 'Obtener códigos de canal de integración' })
   async getChannelCodes() {
-    return await this.casinoGamesService.getChannelCodes();
+    const integrationChannelCodes = await this.casinoGamesService.getChannelCodes();
+    return {
+      integrationChannelCodes,
+    };
   }
-
   @Post('clnd/new-integrationChannelCode')
   @ApiOperation({ summary: 'Crear nuevo código de canal de integración' })
   async newIntegrationChannelCode(@Body() channelData: any) {
-    return await this.casinoGamesService.newIntegrationChannelCode(channelData);
+    const createdChannel = await this.casinoGamesService.newIntegrationChannelCode(channelData);
+    return {
+      createdChannel,
+    };
   }
 
   @Delete('clnd/delete-channel-code/:id')
@@ -177,12 +181,14 @@ export class CasinoGamesController {
   ) {
     return await this.casinoGamesService.updatePromoBanner(id, bannerData);
   }
-
   // Categories
   @Get('cl/nd/get-categories')
   @ApiOperation({ summary: 'Obtener categorías' })
   async getCategories() {
-    return await this.casinoGamesService.getCategories();
+    const categories = await this.casinoGamesService.getCategories();
+    return {
+      categories,
+    };
   }
 
   @Post('cl/nd/get-categories')
