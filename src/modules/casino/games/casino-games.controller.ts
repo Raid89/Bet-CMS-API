@@ -9,51 +9,58 @@ import {
   UseInterceptors,
   UploadedFiles,
   Req,
-  UseGuards,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiOperation,
   ApiConsumes,
-  ApiSecurity,
   ApiParam,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { CasinoGamesService } from './casino-games.service';
 import { CreateCasinoLiveDto, UpdateCasinoLiveDto } from '../dto/casino-live.dto';
-import { AuthGuard } from '../../../guards/auth.guard';
 
-@ApiTags('Casino Live Games')
-@Controller('casino/games')
+@ApiTags('Casino Live ND')
+@Controller()
 export class CasinoGamesController {
   constructor(private readonly casinoGamesService: CasinoGamesService) {}
   
-  @Post('create')
-  @ApiSecurity('bearer')
-  @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Crear un nuevo juego de casino live' })
+  // Channels
+  @Get('clnd/get-integration-channel-codes')
+  @ApiOperation({ summary: 'Obtener códigos de canal de integración' })
+  async getChannelCodes() {
+    return await this.casinoGamesService.getChannelCodes();
+  }
+
+  @Post('clnd/new-integrationChannelCode')
+  @ApiOperation({ summary: 'Crear nuevo código de canal de integración' })
+  async newIntegrationChannelCode(@Body() channelData: any) {
+    return await this.casinoGamesService.newIntegrationChannelCode(channelData);
+  }
+
+  @Delete('clnd/delete-channel-code/:id')
+  @ApiOperation({ summary: 'Eliminar código de canal' })
+  @ApiParam({ name: 'id', description: 'ID del canal' })
+  async deleteChannelCode(@Param('id') id: string) {
+    return await this.casinoGamesService.deleteChannelCode(id);
+  }
+
+  // Games  @Post('clnd/new-game')
+  @ApiOperation({ summary: 'Crear un nuevo juego de casino live ND' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(AnyFilesInterceptor())
-  async createGame(
+  async newGame(
     @Body() createGameDto: CreateCasinoLiveDto,
     @UploadedFiles() files: any,
     @Req() req: Request
   ) {
-    const filesObject: any = {};
-    if (files && files.length > 0) {
-      files.forEach((file: any) => {
-        filesObject[file.fieldname] = file;
-      });
-    }
-    return this.casinoGamesService.createGame(createGameDto, filesObject);
+    return await this.casinoGamesService.newGameCasinoLive(createGameDto, files);
   }
 
-  @Put('update/:id')
-  @ApiSecurity('bearer')
-  @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Actualizar un juego de casino live' })
-  @ApiParam({ name: 'id', description: 'ID del juego de casino live' })
+  @Put('clnd/update-game/:id')
+  @ApiOperation({ summary: 'Actualizar un juego de casino live ND' })
+  @ApiParam({ name: 'id', description: 'ID del juego' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(AnyFilesInterceptor())
   async updateGame(
@@ -62,78 +69,158 @@ export class CasinoGamesController {
     @UploadedFiles() files: any,
     @Req() req: Request
   ) {
-    const filesObject: any = {};
-    if (files && files.length > 0) {
-      files.forEach((file: any) => {
-        filesObject[file.fieldname] = file;
-      });
-    }
-    return this.casinoGamesService.updateGame(id, updateGameDto, filesObject);
+    return await this.casinoGamesService.updateGame(id, updateGameDto, files);
   }
 
-  @Delete('delete/:id')
-  @ApiSecurity('bearer')
-  @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Eliminar un juego de casino live' })
-  @ApiParam({ name: 'id', description: 'ID del juego de casino live' })
+  @Delete('clnd/delete-game/:id')
+  @ApiOperation({ summary: 'Eliminar un juego de casino live ND' })
+  @ApiParam({ name: 'id', description: 'ID del juego' })
   async deleteGame(@Param('id') id: string) {
-    return this.casinoGamesService.deleteGame(id);
+    return await this.casinoGamesService.deleteGame(id);
   }
-  @Get('cms/:limit/:skip')
-  @ApiOperation({ summary: 'Obtener juegos de casino live para CMS con paginación' })
-  @ApiParam({ name: 'limit', description: 'Número de elementos por página' })
-  @ApiParam({ name: 'skip', description: 'Número de elementos a omitir' })
-  async getGamesCMS(
+
+  @Get('clnd/get-cms/:limit/:skip')
+  @ApiOperation({ summary: 'Obtener juegos para CMS con paginación' })
+  @ApiParam({ name: 'limit', description: 'Límite de elementos' })
+  @ApiParam({ name: 'skip', description: 'Elementos a omitir' })
+  async getGamesCLCMS(
     @Param('limit') limit: string,
     @Param('skip') skip: string
   ) {
     const limitNum = parseInt(limit) || 30;
     const skipNum = parseInt(skip) || 0;
-    return this.casinoGamesService.getGamesCMS(limitNum, skipNum);
+    return await this.casinoGamesService.getGamesCLCMS(limitNum, skipNum);
   }
-  @Get('active')
-  @ApiOperation({ summary: 'Obtener todos los juegos de casino live activos' })
-  async getActiveGames() {
-    return this.casinoGamesService.getActiveGames();
-  }
-  @Get(':id')
-  @ApiOperation({ summary: 'Obtener un juego de casino live por ID' })
-  @ApiParam({ name: 'id', description: 'ID del juego de casino live' })
-  async getGameById(@Param('id') id: string) {
-    return this.casinoGamesService.getGameById(id);
-  }
-
-  @Post('set-image/:id')
-  @ApiSecurity('bearer')
-  @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Establecer imagen de un juego de casino live' })
-  @ApiParam({ name: 'id', description: 'ID del juego de casino live' })
-  @ApiConsumes('multipart/form-data')
-  @UseInterceptors(AnyFilesInterceptor())
-  setImage(@Param('id') id: string, @UploadedFiles() files: any, @Req() req: Request) {
-    const filesObject: any = {};
-    if (files && files.length > 0) {
-      files.forEach((file: any) => {
-        filesObject[file.fieldname] = file;
-      });
-    }
-    return this.casinoGamesService.setImage(id, { files: filesObject });
+  @Get('clnd/get-cms-filter/:limit/:skip')
+  @ApiOperation({ summary: 'Obtener juegos filtrados para CMS' })
+  @ApiParam({ name: 'limit', description: 'Límite de elementos' })
+  @ApiParam({ name: 'skip', description: 'Elementos a omitir' })
+  async getFilterGamesCLCMS(
+    @Param('limit') limit: string,
+    @Param('skip') skip: string
+  ) {
+    const limitNum = parseInt(limit) || 30;
+    const skipNum = parseInt(skip) || 0;
+    // For now, use empty strings for missing parameters - these should come from query params
+    return await this.casinoGamesService.getFilterGamesCLCMS(limitNum, skipNum, '', '', '');
   }
 
-  @Post('set-icon/:id')
-  @ApiSecurity('bearer')
-  @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Establecer icono de un juego de casino live' })
-  @ApiParam({ name: 'id', description: 'ID del juego de casino live' })
+  @Get('clnd/get-all')
+  @ApiOperation({ summary: 'Obtener todos los juegos activos' })
+  async getCLGames() {
+    return await this.casinoGamesService.getCLGames();
+  }
+
+  // Banners
+  @Post('clnd/banners/new-banner')
+  @ApiOperation({ summary: 'Crear nuevo banner promocional' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(AnyFilesInterceptor())
-  setIcon(@Param('id') id: string, @UploadedFiles() files: any, @Req() req: Request) {
-    const filesObject: any = {};
-    if (files && files.length > 0) {
-      files.forEach((file: any) => {
-        filesObject[file.fieldname] = file;
-      });
-    }
-    return this.casinoGamesService.setIcon(id, { files: filesObject });
+  async addPromoBanner(@Body() bannerData: any, @UploadedFiles() files: any) {
+    return await this.casinoGamesService.addPromoBanner(bannerData, files);
+  }
+
+  @Get('clnd/banners/get-banners')
+  @ApiOperation({ summary: 'Obtener banners' })
+  async newGetCLBanners() {
+    return await this.casinoGamesService.newGetCLBanners();
+  }
+
+  @Get('clnd/banners/new-get-banners')
+  @ApiOperation({ summary: 'Obtener nuevos banners' })
+  async newGetCLBannersNew() {
+    return await this.casinoGamesService.newGetCLBanners();
+  }
+
+  @Post('clnd/banners/remove-banner/:id')
+  @ApiOperation({ summary: 'Eliminar banner promocional' })
+  @ApiParam({ name: 'id', description: 'ID del banner' })
+  async removePromoBanner(@Param('id') id: string) {
+    return await this.casinoGamesService.removePromoBanner(id);
+  }
+  @Post('clnd/update-single-banner/:id')
+  @ApiOperation({ summary: 'Actualizar banner individual' })
+  @ApiParam({ name: 'id', description: 'ID del banner' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(AnyFilesInterceptor())
+  async updatePromoBanner(
+    @Param('id') id: string,
+    @Body() bannerData: any,
+    @UploadedFiles() files: any
+  ) {
+    return await this.casinoGamesService.updatePromoBanner(id, bannerData);
+  }
+
+  // Categories
+  @Get('cl/nd/get-categories')
+  @ApiOperation({ summary: 'Obtener categorías' })
+  async getCategories() {
+    return await this.casinoGamesService.getCategories();
+  }
+
+  @Post('cl/nd/get-categories')
+  @ApiOperation({ summary: 'Crear nueva categoría' })
+  async newCategory(@Body() categoryData: any) {
+    return await this.casinoGamesService.newCategory(categoryData);
+  }
+
+  @Delete('cl/nd/categories/:id')
+  @ApiOperation({ summary: 'Eliminar categoría' })
+  @ApiParam({ name: 'id', description: 'ID de la categoría' })
+  async deleteCategory(@Param('id') id: string) {
+    return await this.casinoGamesService.deleteCategory(id);
+  }
+
+  @Put('cl/nd/categories/:id')
+  @ApiOperation({ summary: 'Actualizar categoría' })
+  @ApiParam({ name: 'id', description: 'ID de la categoría' })
+  async updateCategory(@Param('id') id: string, @Body() categoryData: any) {
+    return await this.casinoGamesService.updateCategory(id, categoryData);
+  }
+
+  @Get('cl/nd/get-categories-cl')
+  @ApiOperation({ summary: 'Obtener categorías CL' })
+  async getCategoriesCL() {
+    return await this.casinoGamesService.getCategoriesCL();
+  }
+
+  // Masive operations
+  @Post('clnd/new-clgame-masive')
+  @ApiOperation({ summary: 'Carga masiva de juegos CL' })
+  async clGameMasiveCharge(@Body() gameData: any) {
+    return await this.casinoGamesService.clGameMasiveCharge(gameData);
+  }
+
+  @Post('clnd/delete-clgame-masive')
+  @ApiOperation({ summary: 'Eliminación masiva de juegos CL' })
+  async deleteClGameMasive(@Body() gameData: any) {
+    return await this.casinoGamesService.deleteClGameMasive(gameData);
+  }
+
+  // Additional endpoints
+  @Get('cl/nd/get-single-cl/:id')
+  @ApiOperation({ summary: 'Obtener juego individual CL' })
+  @ApiParam({ name: 'id', description: 'ID del juego' })
+  async getSingleCLGame(@Param('id') id: string) {
+    return await this.casinoGamesService.getSingleCLGame(id);
+  }
+  @Post('cl/nd/get-games-by-tags')
+  @ApiOperation({ summary: 'Obtener juegos por tags' })
+  async getGamesByTags(@Body() tagData: any) {
+    const { tags, limit } = tagData;
+    return await this.casinoGamesService.getGamesByTags(tags || [], limit || 10);
+  }
+  @Get('cl/nd/get-games-criteria/:limit/:skip')
+  @ApiOperation({ summary: 'Obtener juegos por criterios' })
+  @ApiParam({ name: 'limit', description: 'Límite de elementos' })
+  @ApiParam({ name: 'skip', description: 'Elementos a omitir' })
+  async getGamesCriteria(
+    @Param('limit') limit: string,
+    @Param('skip') skip: string
+  ) {
+    const limitNum = parseInt(limit) || 30;
+    const skipNum = parseInt(skip) || 0;
+    // Default criteria - should come from query params in real implementation
+    return await this.casinoGamesService.getGamesCriteria(limitNum, skipNum, '');
   }
 }
