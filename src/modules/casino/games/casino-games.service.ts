@@ -191,18 +191,15 @@ export class CasinoGamesService {
         category.clnds = gamesClnd;
         category.total = categoryClnd.length;
       }
-    });
-
-    let result;
+    });    let result;
     if (process.env.IOS_VERSION_TEST === iosVersion && process.env.IOS_TEST_ACTIVE) {
       result = categories.slice(0, 1);
     } else {
       result = categories;
-    }    // Return the exact same structure as Express.js API
-    return {
-      categories: result,
-      base_url: this.configService.get('IMAGE_HOST') + "/" + "cl/",
-    };
+    }
+
+    // Return only the categories array, just like the original Express.js service
+    return result;
   }
 
   // ============= GAMES =============
@@ -390,19 +387,36 @@ export class CasinoGamesService {
       deleted: true,
       message: 'Game deleted successfully'
     };
-  }
-  async getGamesCLCMS(limit: number, skip: number): Promise<any> {
+  }  async getGamesCLCMS(limit: number, skip: number): Promise<any> {
     const games = await this.casinoLiveModel.find({}).skip(skip).limit(limit);
     const total = await this.casinoLiveModel.countDocuments({});
     
-    // Return the exact same structure as Express.js API
-    return { 
-      games, 
-      total,
-      base_url: this.configService.get('IMAGE_HOST') + "/" + "cl/",
-    };
+    // Return only games and total, just like the original Express.js service
+    return { games, total };
+  }async getFilterGamesCLCMS(limit: number, skip: number, criteria: string, integrationChannelCode: string, categoryId: string): Promise<any> {
+    const filter: any[] = [{ title: new RegExp(criteria, 'i') }];
+
+    if (integrationChannelCode !== '') {
+      filter.push({ integrationChannelCode: integrationChannelCode });
+    }
+
+    if (categoryId !== '') {
+      filter.push({ category: new this.casinoLiveModel.base.Types.ObjectId(categoryId) });
+    }
+
+    const games = await this.casinoLiveModel
+      .find({ $and: filter })
+      .skip(skip * limit)
+      .limit(limit)
+      .sort({ position: 1, title: 1 });
+
+    const total = await this.casinoLiveModel.find({ $and: filter }).countDocuments();
+    
+    // Return only games and total, just like the original Express.js service
+    return { games, total };
   }
-  async getFilterGamesCLCMS(limit: number, skip: number, criteria: string, integrationChannelCode: string, categoryId: string): Promise<any> {
+
+  async getFilterGamesCLCMSArray(limit: number, skip: number, criteria: string, integrationChannelCode: string, categoryId: string): Promise<any> {
     const filter: any[] = [{ title: new RegExp(criteria, 'i') }];
 
     if (integrationChannelCode !== '') {
@@ -421,14 +435,9 @@ export class CasinoGamesService {
 
     const total = await this.casinoLiveModel.find({ $and: filter }).countDocuments();
     
-    // Return the exact same structure as Express.js API
-    return { 
-      games, 
-      total,
-      base_url: this.configService.get('IMAGE_HOST') + "/" + "cl/",
-    };
-  }
-  async getCLGames(iosVersion?: string): Promise<any> {
+    // Return only games and total, just like the original Express.js service
+    return { games, total };
+  }  async getCLGames(iosVersion?: string): Promise<any> {
     let limit = 10000;
     if (process.env.IOS_VERSION_TEST === iosVersion && process.env.IOS_TEST_ACTIVE) limit = 1;
 
@@ -452,13 +461,9 @@ export class CasinoGamesService {
       games[index].category = Array.isArray(game.category) ? game.category[0] : game.category;
     });
 
-    // Return the exact same structure as Express.js API
-    return {
-      games,
-      base_url: this.configService.get('IMAGE_HOST') + "/" + "cl/",
-    };
-  }
-  async getGamesByTags(tags: string[], limit: number): Promise<any> {
+    // Return only the games array, just like the original Express.js service
+    return games;
+  }  async getGamesByTags(tags: string[], limit: number): Promise<any> {
     try {
       const result = await this.casinoLiveModel.aggregate([
         {
@@ -487,16 +492,12 @@ export class CasinoGamesService {
         }
       ]);
 
-      // Return the exact same structure as Express.js API
-      return {
-        result,
-        base_url: this.configService.get('IMAGE_HOST') + "/" + "cl/",
-      };
+      // Return only the result array, just like the original Express.js service
+      return result;
     } catch (err) {
       throw err;
     }
-  }
-  async getGamesCriteria(limit: number, skip: number, criteria: string, iosVersion?: string): Promise<any> {
+  }  async getGamesCriteria(limit: number, skip: number, criteria: string, iosVersion?: string): Promise<any> {
     if (process.env.IOS_VERSION_TEST === iosVersion && process.env.IOS_TEST_ACTIVE) limit = 1;
 
     const count = await this.casinoLiveModel.find({
@@ -533,13 +534,8 @@ export class CasinoGamesService {
       response[index].category = Array.isArray(game.category) ? game.category[0] : game.category;
     });
 
-    const result = { count, data: response };
-
-    // Return the exact same structure as Express.js API
-    return {
-      result,
-      base_url: this.configService.get('IMAGE_HOST') + "/" + "cl/",
-    };
+    // Return only {count, data}, just like the original Express.js service
+    return { count, data: response };
   }
 
   // ============= MASSIVE OPERATIONS =============

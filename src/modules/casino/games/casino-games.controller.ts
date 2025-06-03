@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Req,
+  Query,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import {
@@ -78,7 +79,6 @@ export class CasinoGamesController {
   async deleteGame(@Param('id') id: string) {
     return await this.casinoGamesService.deleteGame(id);
   }
-
   @Get('clnd/get-cms/:limit/:skip')
   @ApiOperation({ summary: 'Obtener juegos para CMS con paginación' })
   @ApiParam({ name: 'limit', description: 'Límite de elementos' })
@@ -89,26 +89,53 @@ export class CasinoGamesController {
   ) {
     const limitNum = parseInt(limit) || 30;
     const skipNum = parseInt(skip) || 0;
-    return await this.casinoGamesService.getGamesCLCMS(limitNum, skipNum);
-  }
-  @Get('clnd/get-cms-filter/:limit/:skip')
+    const { games, total } = await this.casinoGamesService.getGamesCLCMS(limitNum, skipNum);
+    return {
+      games,
+      total,
+      base_url: process.env.IMAGESHOST + "/" + "cl/",
+    };
+  }  @Get('clnd/get-cms-filter/:limit/:skip')
   @ApiOperation({ summary: 'Obtener juegos filtrados para CMS' })
   @ApiParam({ name: 'limit', description: 'Límite de elementos' })
   @ApiParam({ name: 'skip', description: 'Elementos a omitir' })
   async getFilterGamesCLCMS(
     @Param('limit') limit: string,
-    @Param('skip') skip: string
+    @Param('skip') skip: string,
+    @Req() req: Request
   ) {
     const limitNum = parseInt(limit) || 30;
     const skipNum = parseInt(skip) || 0;
-    // For now, use empty strings for missing parameters - these should come from query params
-    return await this.casinoGamesService.getFilterGamesCLCMS(limitNum, skipNum, '', '', '');
-  }
+    const criteria = req.query.criteria as string || '';
+    const integrationChannelCode = req.query.integrationChannelCode as string || '';
+    const categoryId = req.query.categoryId as string || '';
 
-  @Get('clnd/get-all')  @ApiOperation({ summary: 'Obtener todos los juegos activos' })
+    const response = await this.casinoGamesService.getFilterGamesCLCMS(limitNum, skipNum, criteria, integrationChannelCode, categoryId);
+    
+    if(categoryId === ""){
+      return {
+        total: response.total, 
+        base_url: process.env.IMAGESHOST + "/" + "cl/", 
+        games: response.games
+      };
+    } else {
+      const response2 = await this.casinoGamesService.getFilterGamesCLCMSArray(limitNum, skipNum, criteria, integrationChannelCode, categoryId);
+      return {
+        total: response.total + response2.total, 
+        base_url: process.env.IMAGESHOST + "/" + "cl/", 
+        games: [...response.games, ...response2.games].sort((a: any, b: any) => a.position - b.position)
+      };
+    }
+  }
+  @Get('clnd/get-all')
+  @ApiOperation({ summary: 'Obtener todos los juegos activos' })
   async getCLGames(@Req() req: Request) {
     const iosVersion = req.headers.iosversion as string;
-    return await this.casinoGamesService.getCLGames(iosVersion);
+    const games = await this.casinoGamesService.getCLGames(iosVersion);
+    return {
+      games,
+      base_url: process.env.IMAGESHOST + "/" + "cl/",
+    };
   }
 
   // Banners
@@ -176,12 +203,15 @@ export class CasinoGamesController {
   @ApiParam({ name: 'id', description: 'ID de la categoría' })
   async updateCategory(@Param('id') id: string, @Body() categoryData: any) {
     return await this.casinoGamesService.updateCategory(id, categoryData);
-  }
-  @Get('cl/nd/get-categories-cl')
+  }  @Get('cl/nd/get-categories-cl')
   @ApiOperation({ summary: 'Obtener categorías CL' })
   async getCategoriesCL(@Req() req: Request) {
     const iosVersion = req.headers.iosversion as string;
-    return await this.casinoGamesService.getCategoriesCL(iosVersion);
+    const categories = await this.casinoGamesService.getCategoriesCL(iosVersion);
+    return {
+      categories,
+      base_url: process.env.IMAGESHOST + "/" + "cl/",
+    };
   }
 
   // Masive operations
@@ -203,12 +233,15 @@ export class CasinoGamesController {
   @ApiParam({ name: 'id', description: 'ID del juego' })
   async getSingleCLGame(@Param('id') id: string) {
     return await this.casinoGamesService.getSingleCLGame(id);
-  }
-  @Post('cl/nd/get-games-by-tags')
+  }  @Post('cl/nd/get-games-by-tags')
   @ApiOperation({ summary: 'Obtener juegos por tags' })
   async getGamesByTags(@Body() tagData: any) {
     const { tags, limit } = tagData;
-    return await this.casinoGamesService.getGamesByTags(tags || [], limit || 10);
+    const result = await this.casinoGamesService.getGamesByTags(tags || [], limit || 10);
+    return { 
+      result, 
+      base_url: process.env.IMAGESHOST + "/" + "cl/",
+    };
   }  @Get('cl/nd/get-games-criteria/:limit/:skip')
   @ApiOperation({ summary: 'Obtener juegos por criterios' })
   @ApiParam({ name: 'limit', description: 'Límite de elementos' })
@@ -222,6 +255,10 @@ export class CasinoGamesController {
     const skipNum = parseInt(skip) || 0;
     const criteria = req.query.criteria as string || '';
     const iosVersion = req.headers.iosversion as string;
-    return await this.casinoGamesService.getGamesCriteria(limitNum, skipNum, criteria, iosVersion);
+    const result = await this.casinoGamesService.getGamesCriteria(limitNum, skipNum, criteria, iosVersion);
+    return { 
+      result, 
+      base_url: process.env.IMAGESHOST + "/" + "cl/",
+    };
   }
 }
