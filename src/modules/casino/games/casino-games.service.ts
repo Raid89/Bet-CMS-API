@@ -81,9 +81,19 @@ export class CasinoGamesService {
       throw error;
     }
   }
+  async updatePromoBanner(id: string, data: UpdateBannerDto, files?: any): Promise<{ code: string; message: string; data: BannerCL }> {
+    const updateData = { ...data };
+    
+    // Handle file upload if provided
+    if (files?.image) {
+      const imageFileName = `${id}.jpg`;
+      await this.fileStorageService.saveFile(imageFileName, 'cl', files.image);
+      
+      const imageHost = this.configService.get('IMAGE_HOST') || process.env.IMAGESHOST;
+      updateData.path = `${imageHost}/cl/${imageFileName}`;
+    }
 
-  async updatePromoBanner(id: string, data: UpdateBannerDto): Promise<{ code: string; message: string; data: BannerCL }> {
-    const result = await this.bannerCLModel.findByIdAndUpdate(id, data, { new: true });
+    const result = await this.bannerCLModel.findByIdAndUpdate(id, updateData, { new: true });
     if (!result) {
       throw new NotFoundException(`Banner with ID ${id} not found`);
     }

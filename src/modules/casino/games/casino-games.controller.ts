@@ -26,6 +26,28 @@ import { CreateCasinoLiveDto, UpdateCasinoLiveDto } from '../dto/casino-live.dto
 @Controller()
 export class CasinoGamesController {
   constructor(private readonly casinoGamesService: CasinoGamesService) {}
+
+  // Helper function to convert files array to object structure
+  private convertFilesToObject(files: any[]): any {
+    const filesObject: any = {};
+    if (files && files.length > 0) {
+      files.forEach((file: any) => {
+        console.log(`Processing file: ${file.fieldname}, originalname: ${file.originalname}`);
+        
+        if (filesObject[file.fieldname]) {
+          // Handle multiple files with same fieldname (like msIllustrative[])
+          if (!Array.isArray(filesObject[file.fieldname])) {
+            filesObject[file.fieldname] = [filesObject[file.fieldname]];
+          }
+          filesObject[file.fieldname].push(file);
+        } else {
+          filesObject[file.fieldname] = file;
+        }
+      });
+    }
+    console.log('Controller - Processed files object keys:', Object.keys(filesObject));
+    return filesObject;
+  }
     // Channels
   @Get('clnd/get-integration-channel-codes')
   @ApiOperation({ summary: 'Obtener códigos de canal de integración' })
@@ -50,7 +72,6 @@ export class CasinoGamesController {
   async deleteChannelCode(@Param('id') id: string) {
     return await this.casinoGamesService.deleteChannelCode(id);
   }
-
   @Post('clnd/new-game')
   @ApiOperation({ summary: 'Crear un nuevo juego de casino live ND' })
   @ApiConsumes('multipart/form-data')
@@ -60,12 +81,9 @@ export class CasinoGamesController {
     @UploadedFiles() files: any,
     @Req() req: Request
   ) {
-    let image = {image: null, icon: null};
-    image.image = files.filter((file: any) => file.fieldname === 'image')[0];
-    image.icon = files.filter((file: any) => file.fieldname === 'icon')[0];
-    return await this.casinoGamesService.newGameCasinoLive(createGameDto, image);
+    const filesObject = this.convertFilesToObject(files);
+    return await this.casinoGamesService.newGameCasinoLive(createGameDto, filesObject);
   }
-
   @Put('clnd/update-game/:id')
   @ApiOperation({ summary: 'Actualizar un juego de casino live ND' })
   @ApiParam({ name: 'id', description: 'ID del juego' })
@@ -77,7 +95,8 @@ export class CasinoGamesController {
     @UploadedFiles() files: any,
     @Req() req: Request
   ) {
-    return await this.casinoGamesService.updateGame(id, updateGameDto, files);
+    const filesObject = this.convertFilesToObject(files);
+    return await this.casinoGamesService.updateGame(id, updateGameDto, filesObject);
   }
 
   @Delete('clnd/delete-game/:id')
@@ -145,13 +164,13 @@ export class CasinoGamesController {
     };
   }
 
-  // Banners
-  @Post('clnd/banners/new-banner')
+  // Banners  @Post('clnd/banners/new-banner')
   @ApiOperation({ summary: 'Crear nuevo banner promocional' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(AnyFilesInterceptor())
   async addPromoBanner(@Body() bannerData: any, @UploadedFiles() files: any) {
-    return await this.casinoGamesService.addPromoBanner(bannerData, files);
+    const filesObject = this.convertFilesToObject(files);
+    return await this.casinoGamesService.addPromoBanner(bannerData, filesObject);
   }
 
   @Get('clnd/banners/get-banners')
@@ -171,8 +190,7 @@ export class CasinoGamesController {
   @ApiParam({ name: 'id', description: 'ID del banner' })
   async removePromoBanner(@Param('id') id: string) {
     return await this.casinoGamesService.removePromoBanner(id);
-  }
-  @Post('clnd/update-single-banner/:id')
+  }  @Post('clnd/update-single-banner/:id')
   @ApiOperation({ summary: 'Actualizar banner individual' })
   @ApiParam({ name: 'id', description: 'ID del banner' })
   @ApiConsumes('multipart/form-data')
@@ -182,7 +200,8 @@ export class CasinoGamesController {
     @Body() bannerData: any,
     @UploadedFiles() files: any
   ) {
-    return await this.casinoGamesService.updatePromoBanner(id, bannerData);
+    const filesObject = this.convertFilesToObject(files);
+    return await this.casinoGamesService.updatePromoBanner(id, bannerData, filesObject);
   }
   // Categories
   @Get('cl/nd/get-categories')
