@@ -51,7 +51,7 @@ export class CasinoGamesController {
     return await this.casinoGamesService.deleteChannelCode(id);
   }
 
-  // Games  @Post('clnd/new-game')
+  @Post('clnd/new-game')
   @ApiOperation({ summary: 'Crear un nuevo juego de casino live ND' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(AnyFilesInterceptor())
