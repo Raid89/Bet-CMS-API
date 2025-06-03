@@ -105,10 +105,10 @@ export class CasinoGamesController {
     return await this.casinoGamesService.getFilterGamesCLCMS(limitNum, skipNum, '', '', '');
   }
 
-  @Get('clnd/get-all')
-  @ApiOperation({ summary: 'Obtener todos los juegos activos' })
-  async getCLGames() {
-    return await this.casinoGamesService.getCLGames();
+  @Get('clnd/get-all')  @ApiOperation({ summary: 'Obtener todos los juegos activos' })
+  async getCLGames(@Req() req: Request) {
+    const iosVersion = req.headers.iosversion as string;
+    return await this.casinoGamesService.getCLGames(iosVersion);
   }
 
   // Banners
@@ -177,11 +177,11 @@ export class CasinoGamesController {
   async updateCategory(@Param('id') id: string, @Body() categoryData: any) {
     return await this.casinoGamesService.updateCategory(id, categoryData);
   }
-
   @Get('cl/nd/get-categories-cl')
   @ApiOperation({ summary: 'Obtener categorías CL' })
-  async getCategoriesCL() {
-    return await this.casinoGamesService.getCategoriesCL();
+  async getCategoriesCL(@Req() req: Request) {
+    const iosVersion = req.headers.iosversion as string;
+    return await this.casinoGamesService.getCategoriesCL(iosVersion);
   }
 
   // Masive operations
@@ -209,18 +209,19 @@ export class CasinoGamesController {
   async getGamesByTags(@Body() tagData: any) {
     const { tags, limit } = tagData;
     return await this.casinoGamesService.getGamesByTags(tags || [], limit || 10);
-  }
-  @Get('cl/nd/get-games-criteria/:limit/:skip')
+  }  @Get('cl/nd/get-games-criteria/:limit/:skip')
   @ApiOperation({ summary: 'Obtener juegos por criterios' })
   @ApiParam({ name: 'limit', description: 'Límite de elementos' })
   @ApiParam({ name: 'skip', description: 'Elementos a omitir' })
   async getGamesCriteria(
     @Param('limit') limit: string,
-    @Param('skip') skip: string
+    @Param('skip') skip: string,
+    @Req() req: Request
   ) {
     const limitNum = parseInt(limit) || 30;
     const skipNum = parseInt(skip) || 0;
-    // Default criteria - should come from query params in real implementation
-    return await this.casinoGamesService.getGamesCriteria(limitNum, skipNum, '');
+    const criteria = req.query.criteria as string || '';
+    const iosVersion = req.headers.iosversion as string;
+    return await this.casinoGamesService.getGamesCriteria(limitNum, skipNum, criteria, iosVersion);
   }
 }
