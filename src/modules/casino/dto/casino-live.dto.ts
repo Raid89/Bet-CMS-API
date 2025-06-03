@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsNumber } from 'class-validator';
 
 export class CreateCasinoLiveDto {
   @ApiProperty({ description: 'Título del juego de casino live' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   title!: string;
 
   @ApiProperty({ description: 'Código del juego' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   gameCode!: string;
 
   @ApiProperty({ description: 'Estado del juego', default: 'active', required: false })

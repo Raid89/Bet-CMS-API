@@ -56,7 +56,7 @@ export class CasinoGamesController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(AnyFilesInterceptor())
   async newGame(
-    @Body() createGameDto: CreateCasinoLiveDto,
+    @Body() createGameDto: any,
     @UploadedFiles() files: any,
     @Req() req: Request
   ) {
