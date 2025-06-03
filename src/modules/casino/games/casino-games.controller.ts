@@ -91,7 +91,7 @@ export class CasinoGamesController {
   @UseInterceptors(AnyFilesInterceptor())
   async updateGame(
     @Param('id') id: string,
-    @Body() updateGameDto: UpdateCasinoLiveDto,
+    @Body() updateGameDto: any,
     @UploadedFiles() files: any,
     @Req() req: Request
   ) {
@@ -164,7 +164,8 @@ export class CasinoGamesController {
     };
   }
 
-  // Banners  @Post('clnd/banners/new-banner')
+  // Banners  
+  @Post('clnd/banners/new-banner')
   @ApiOperation({ summary: 'Crear nuevo banner promocional' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(AnyFilesInterceptor())
