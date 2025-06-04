@@ -14,7 +14,9 @@ import {
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { CasinoVipGamesService } from './casino-vip-games.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Casino VIP')
 @Controller('clnd-vip')
 export class CasinoVipGamesController {
   constructor(
